@@ -12,6 +12,9 @@ WP核心做它该做的事，你做你想做的事，做完就各自结束。
 
 开发者通过自定义的函数修改了WP核心传入的参数，随后WP核心再接着拿你改过的参数，继续完成它该做的事，此动作就像”过滤“的动作，因而得名 filter（过滤器）。
 
+一个较为形象地理解hook机制的图：
+![](https://github.com/undersunshine/MyArticle/blob/master/WordPress/images/wpdaxue.com-201303508.png)
+
 ## action hook的几个方法
 
 
