@@ -39,8 +39,14 @@ var=45 echo $(($var+3)) => 输出48
 var=2 => \[ $var -gt 1 \]  <=> test $var -gt 1
 
 比较符：
+\[ ARG1 OP ARG2 \] OP 可取形式为：
 > -eq 等于 -ne 不等于 -lt 小于 -le 小于等于 -gt 大于 -ge 大于等于
 
+判断是否为文件和是否为目录： \[-d DIR]\  \[ -f FILE \] 
+
+判断字符串的长度是否为0：   \[-z STRING \] \[-n STRING \]
+
+判断两个string是否相同： \[ STRING1=STRING2 \] \[ STRING1!=STRING2 \]
 
 
 
