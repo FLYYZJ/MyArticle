@@ -78,12 +78,21 @@ esac # 结束标志
 ```
 
 ### shell中的循环
-
+for循环：注意分割符是空格不是逗号，同时记得有分号结束
 ```shell
 for FRUIT in apple banana peach; then
   do something
 done
+
+for filename in `ls -l`; then
+  do something
+end
 ```
-
-
+while循环：
+```shell
+while [ 条件逻辑 ]; do
+  do something
+done
+```
+break 和 continue，break\[n]是指定跳出n层循环（注意**循环是可以嵌套的**），continue是跳出当前循环步
 
