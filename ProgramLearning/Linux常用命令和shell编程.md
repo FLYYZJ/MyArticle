@@ -77,7 +77,13 @@ esac # 结束标志
 
 ```
 
+### shell中的循环
 
+```shell
+for FRUIT in apple banana peach; then
+  do something
+done
+```
 
 
 
