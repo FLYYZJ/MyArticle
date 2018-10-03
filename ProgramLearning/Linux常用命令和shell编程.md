@@ -155,6 +155,9 @@ bash  <-> $0
 
 # shell中常用工具
 
+## shell 正则表达式
+[shell中的正则表达式总结](http://man.linuxde.net/docs/shell_regex.html)
+
 
 
 
