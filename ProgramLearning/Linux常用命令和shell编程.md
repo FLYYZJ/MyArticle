@@ -263,14 +263,14 @@ find . -type f -print | xargs vim # 即找到当前目录下的所有文件，�
 find . -type f -print | xargs grep "hello" # 即找到当前目录下的所有文件，然后通过管道传递给xargs，然后匹配当中含有hello的行并打印
 ```
 
-## 4、sed命令
+## 4、sed命令(直观体现为处理行数据)
 流编辑器，在shell脚本和makefile文件中作为过滤器使用，即将前一个程序的输出引入sed的输入，经过一系列编辑命令转换为另一种格式输出。sed和vi的末行命令类似（在vi中用:然后敲入的命令）
 
 ```shell
 sed option 'script'（过滤的正则条件，写入某个脚本文件中） file1 file2 ...（过滤的文件）
 sed option -f scriptfile file1 file2 ...
 ```
-一些参数（option）的选择:
+一些参数（option）的选择（**一个注意点：sed默认不修改源文件**）:
 ```shell
 --version： 显示版本
 --help：提示
@@ -280,27 +280,58 @@ sed option -f scriptfile file1 file2 ...
 -i,--in-place： 直接修改源文件，经脚本指令处理后的内容将被输出到源文件
 -l N, --line-length=N：输出行长度（第N行的长度）
 --posix： 禁用GNU sed的拓展功能
--r, --regexp-extended： 脚本中使用拓展正则表达式
+-r, --regexp-extended： 脚本中使用拓展正则表达式，默认是基础正则表达式
 -s, --separate：默认情况下 sed将把命令行指定的多个文件名作为一个长的连续输入流，该参数会修改为分别读取单独文件
 -u,--unbuffered：最低限度的缓存输入和输出
 ```
 示例: 假设testfile中有3行，分别是abc，123，456
 ```shell
 sed '/abc/p' testfile => 在testfile中找到abc然后打印出匹配一行
-
+sed "2,3d" testfile | tee ab.txt => 删除testfile中的2-3行，然后保存到ab.txt文件中
 ```
 常用命令：匹配规则
 ```shell
 /pattern/p ： 打印匹配pattern的行
 /pattern/d ： 删除匹配pattern的行
 /pattern/s/pattern1/pattern2/ 查找符合pattern的行，将该行第一个匹配pattern1的字符串替换为pattern2
-/pattern/s/pattern1/pattern2/g 查找符合pattern的行，将该行所有匹配pattern1的字符串替换为pattern2
+/pattern/s/pattern1/pattern2/g 查找符合pattern的行，将该行所有匹配pattern1的字符串替换为pattern2（全局替换）
+
+sed -n '/[a-z].c/p' testfile => 此时会打印出abc
+sed 's/bc/-&-/' testfile => 此时第二行的abc会变成 a-bc-，其中&指代和pattern1相互匹配的字符串
+sed -r 's/([0-9])([0-9])//-\1-~\2~' testfile => 其中的\1表示和pattern1中第一个()匹配的内容，\2表示和pattern1中第二个()匹配的内容，依此类推
+
+假设文件t.txt中含有如下内容：
+<a src="www.abc.com/1/1.jpg">hello world</a>
+此时
+sed -r 's/<[/ a-z]*>//g' t.txt <=> sed -r 's/<.*?>//g' t.txt 此时可以去除其中的标签，*对应的是出现0次或1次[] 中表示的是出现/ 空格和a-z这些字符
+```
+其它几个常用命令
+```shell
+a 追加
+i 插入
+d 删除
+s 替换
+
+sed "2,5d" testfile => 删除testfile中的2-5行
+sed "2a itcast" testfile => 在testfile的第二行后添加itcast，a是append，追加
 ```
 
+## awk（直观理解为处理列数据）
+awk缺省的行分隔符为换行，缺省的列分隔符为连续空格或tab，awk实际是复杂脚本语言，有循环和分支结构。
+```shell
+awk option 'script'（过滤的正则条件，写入某个脚本文件中） file1 file2 ...（过滤的文件）
+awk option -f scriptfile file1 file2 ...
+```
+假设testfile中有 ProductA 30、ProductB 76和ProductC 55三列
+```shell
+awk '{print $2;}' testfile => 打印第二列内容，即30，76，55； 打印第一列使用 $1 即可，可见提取列信息很简单
 
-
-
-
+awk '$2<75 {printf "%s\t%s\n",$0,"REORDER" $2>=75 {print $0}}' testfile =>
+输出为:
+  ProductA 30 REORDER
+  ProductB 76
+  ProductC 55 REORDER
+```
 
 
 
