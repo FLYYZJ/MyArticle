@@ -324,15 +324,32 @@ awk option -f scriptfile file1 file2 ...
 ```
 假设testfile中有 ProductA 30、ProductB 76和ProductC 55三列
 ```shell
+
+/pattern/{actions} => 符合某个pattern执行动作
+condition{actions} => 满足何种条件执行动作
+
 awk '{print $2;}' testfile => 打印第二列内容，即30，76，55； 打印第一列使用 $1 即可，可见提取列信息很简单
 
-awk '$2<75 {printf "%s\t%s\n",$0,"REORDER" $2>=75 {print $0}}' testfile =>
+awk '$2<75 {printf "%s\t%s\n",$0,"REORDER" $2>=75 {print $0}}' testfile # 其中$0表示整个当前行
 输出为:
   ProductA 30 REORDER
   ProductB 76
   ProductC 55 REORDER
-```
 
+awk '/^ *$/ {x=x+1;} END {printx}' testfile => 匹配空行，同时计算有多少个空行
+```
+awk的内建变量
+```shell
+FILENAME 当前输入文件的文件名
+NR       当前行的行号，只读变量不可修改
+NF       当前行所拥有的变量，同样不可改
+OFS      输出格式的列分隔符 缺省为空格
+FS       输入文件的列分隔符 缺省为连续空格或tab
+ORS      输出格式的行分隔符 缺省为换行符，下同
+RS       输入文件的行分隔符
+
+awk 'BEGIN {FS=":"} {print $1;}' /etc/password => 按照 : 作为分隔符对testfile进行分割，并打印其中的第1列
+```
 
 
 
