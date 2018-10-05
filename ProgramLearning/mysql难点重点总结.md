@@ -26,7 +26,7 @@ create table students(
 id int auto_increment primary key not null, 
 sname varchar(10) not null,
 gender bit default 1 ,
-);
+); => 此时底层默认使用InnerDB ENGINE = InnoDB，默认编码是utf8 
 show create table tbname; => 显示建表时的语句
 
 desc tbname; => 显示表结构
@@ -40,7 +40,6 @@ drop table tbname; => 删除表格
 rename table orignalname to newname; => 修改表名
 ```
 
-
 基本删表方式
 ```sql
 drop database dbname
@@ -48,6 +47,10 @@ drop database dbname
 
 
 ## 增删改查
+查询
+```sql
+
+```
 
 
 ## 聚合
