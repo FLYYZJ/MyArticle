@@ -343,7 +343,7 @@ awk '{if($2<75) printf "%s\t%s\n",$0,"REORDER"} {if($2>=75) print $0}' testfile
 
 awk '/^ *$/ {x=x+1;} END {printx}' testfile => 匹配空行，同时计算有多少个空行
 ```
-**两个较为特殊的字段：BEGIN 和 END，BEGIN是在执行文件操作之前完成一些操作，END是在执行文件操作之后再完成一些操作，都写在同一个''之中**
+**两个较为特殊的字段：BEGIN 和 END，BEGIN标记在执行文件操作之前完成一些操作的代码块，END标记在执行文件操作之后再完成一些操作的代码块，都写在同一个''之中**
 ![AWK执行流程](http://wiki.jikexueyuan.com/project/awk/images/awk_workflow.jpg)
 
 awk的内建变量（除 $0,$1...之外的常用内建变量）
@@ -360,7 +360,51 @@ awk 'BEGIN {FS=":"} {print $1;}' /etc/password => 按照 : 作为分隔符对tes
 ```
 awk流程控制和循环
 ```shell
+for 循环
+for (initialisation; condition; increment/decrement) 
+    action
 
+do-while循环
+do
+    action
+while (condition)
+
+示例：
+awk 'BEGIN { for (i = 1; i <= 5; ++i) print i }' => 打印1~5
+
+-----------------------------------------------------------------------------
+if...else... 控制流
+if (condition)
+{
+    action-1
+    action-1
+    .
+    .
+    action-n
+}
+
+if (condition)
+    action-1 => 注意在else之前必须加分号，否则无法分辨
+else
+    action-2
+
+if (condition1)
+    action-1 => 注意在else之前必须加分号，否则无法分辨
+else if(condition2)
+    action-2 => 注意在else之前必须加分号，否则无法分辨
+else
+    action-3
+
+示例:
+awk 'BEGIN {
+a=30;
+if (a==10)
+  print "a = 10";
+else if (a == 20)
+  print "a = 20";
+else if (a == 30)
+  print "a = 30";
+}'
 ```
 
 高级应用：
@@ -368,5 +412,5 @@ awk流程控制和循环
 2. [awk常用命令集合](http://www.runoob.com/linux/linux-comm-awk.html)
 3. [awk数组](https://www.jianshu.com/p/64952ccbf733)
 4. [awk字符串连接](https://www.cnblogs.com/chengmo/archive/2010/10/09/1846639.html)
-5. [awk循环](http://wiki.jikexueyuan.com/project/awk/loops.html)
+5. [awk循环（这个文档还介绍了函数）](http://wiki.jikexueyuan.com/project/awk/loops.html)
 
