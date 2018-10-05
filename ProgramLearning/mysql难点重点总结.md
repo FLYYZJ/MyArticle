@@ -2,6 +2,9 @@
 ```sql
 连接mysql：mysql -u username -p password -p port(默认3306) -h ipaddr(指定的IP地址)
 mysql帮助： mysql -h 
+
+备份数据：mysqldump -u superuser -p dbname > path/filename.sql => 保存到path/filename.sql 中
+恢复数据：mysql -u superuser -p dbname < path/filename.sql => 恢复path/filename.sql到数据库中
 ```
 ## 建表/删表 
 基本建库方式
@@ -46,12 +49,39 @@ drop database dbname
 ```
 
 
-## 增删改查
+## 增删改查（基本操作）
 查询
 ```sql
-
+select colnames from tbname where conditions; 
+```
+增加数据
+```sql
+全列插入： insert into tbname values(...); => (...)其中数据的顺序必须和数据表的结构一致，每个列都要取到
+缺省插入： insert into tbname(col1,col2,...) values (v1,v2,...); => v和col一一对应(顺序)
+同时插入多条数据： insert into tbname values(...),(...),...; <=> insert into tbname(col1,col2,...) values(v1,v2,...),(v1,v2,...),...; =>在程序中用该方法可以提高插入数据的速度
 ```
 
+删除数据
+```sql
+delete from tbname where conditions; => 注意最好加入conditions，不加conditions则会删除整张表中的数据
+```
+
+更新数据
+```sql
+update tbname set col1=v1,... where conditions; => 对应修改列和值
+```
+
+## 高级查询
+```sql
+select distinct colnames from tbname where conditions; => 查询不重复的数据 distinct,不同的colname用逗号分割
+
+where中常用的运算符：
+  条件比较符： >=， >， <=， <， =， !=(<>)
+  逻辑运算符： and，or，not
+  模糊查询： %condition%（（包含condition）），%condition（以condition结尾），condition%（以condition开头）,condition_（以condition开头且后面只包含一个字符，两个字符就是两个下划线）
+  范围查询：in (v1,v2,v3,...) 查询字段满足在 (v1,v2,v3,...) 这个非连续范围内
+           between v1 and v2 查询字段满足在 (v1,v2) 这个连续范围内
+```
 
 ## 聚合
 
