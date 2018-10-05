@@ -353,6 +353,8 @@ RS       输入文件的行分隔符
 awk 'BEGIN {FS=":"} {print $1;}' /etc/password => 按照 : 作为分隔符对testfile进行分割，并打印其中的第1列
 ```
 
+高级应用：
+[统计词频](https://blog.csdn.net/u013246898/article/details/80240024)
 
 
 
