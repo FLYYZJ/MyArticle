@@ -266,7 +266,7 @@ find . -type f -print | xargs vim # 即找到当前目录下的所有文件，�
 find . -type f -print | xargs grep "hello" # 即找到当前目录下的所有文件，然后通过管道传递给xargs，然后匹配当中含有hello的行并打印
 ```
 
-## 4、sed命令(直观体现为处理行数据)
+## 4、sed命令(比较利于处理行数据)
 流编辑器，在shell脚本和makefile文件中作为过滤器使用，即将前一个程序的输出引入sed的输入，经过一系列编辑命令转换为另一种格式输出。sed和vi的末行命令类似（在vi中用:然后敲入的命令）
 
 ```shell
@@ -319,7 +319,7 @@ sed "2,5d" testfile => 删除testfile中的2-5行
 sed "2a itcast" testfile => 在testfile的第二行后添加itcast，a是append，追加
 ```
 
-## awk（直观理解为处理列数据）
+## awk（比较利于处理列数据）
 awk缺省的行分隔符为换行，缺省的列分隔符为连续空格或tab，awk实际是复杂脚本语言，有循环和分支结构。
 ```shell
 awk option 'script'（过滤的正则条件，写入某个脚本文件中） file1 file2 ...（过滤的文件）
@@ -343,11 +343,14 @@ awk '{if($2<75) printf "%s\t%s\n",$0,"REORDER"} {if($2>=75) print $0}' testfile
 
 awk '/^ *$/ {x=x+1;} END {printx}' testfile => 匹配空行，同时计算有多少个空行
 ```
-awk的内建变量
+**两个较为特殊的字段：BEGIN 和 END，BEGIN是在执行文件操作之前完成一些操作，END是在执行文件操作之后再完成一些操作，都写在同一个''之中**
+![AWK执行流程](http://wiki.jikexueyuan.com/project/awk/images/awk_workflow.jpg)
+
+awk的内建变量（除 $0,$1...之外的常用内建变量）
 ```shell
 FILENAME 当前输入文件的文件名
-NR       当前行的行号，只读变量不可修改
-NF       当前行所拥有的变量，同样不可改
+NR       当前行的行号，只读变量不可修改，例如有3行，print NR 会显示1，2，3
+NF       当前行所拥有的变量数，同样不可改，例如每行有3列，共2行，print NF 会显示 3，3
 OFS      输出格式的列分隔符 缺省为空格
 FS       输入文件的列分隔符 缺省为连续空格或tab
 ORS      输出格式的行分隔符 缺省为换行符，下同
@@ -355,11 +358,15 @@ RS       输入文件的行分隔符
 
 awk 'BEGIN {FS=":"} {print $1;}' /etc/password => 按照 : 作为分隔符对testfile进行分割，并打印其中的第1列
 ```
+awk流程控制和循环
+```shell
+
+```
 
 高级应用：
 1. [统计词频](https://blog.csdn.net/u013246898/article/details/80240024)
 2. [awk常用命令集合](http://www.runoob.com/linux/linux-comm-awk.html)
 3. [awk数组](https://www.jianshu.com/p/64952ccbf733)
 4. [awk字符串连接](https://www.cnblogs.com/chengmo/archive/2010/10/09/1846639.html)
-
+5. [awk循环](http://wiki.jikexueyuan.com/project/awk/loops.html)
 
