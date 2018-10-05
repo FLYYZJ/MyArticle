@@ -1,4 +1,7 @@
 # 常用命令：
+
+[Linux命令大全](http://www.runoob.com/linux/linux-command-manual.html)
+
 export 环境变量名=value ： 环境变量设置，注意 = 两边不能有空格，而且该设置仅在当前打开的 terminal 中有效，要想让这个环境变量在全局中起作用，需要将该指令写入~/.bashrc 文件里面，在 source ~/.bashrc即可
 
 unset 环境变量名 ： 删除该环境变量
