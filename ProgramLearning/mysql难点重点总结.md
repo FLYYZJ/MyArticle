@@ -87,9 +87,6 @@ where中常用的运算符：
 ```
 **优先级 小括号 ＞ not ＞ 比较运算符 ＞ 逻辑运算符**
 
-**sql语句的执行顺序**：
-(1)from (2) on (3) join (4) where (5)group by(开始使用select中的别名，后面的语句中都可以使用)(6) avg,sum.... (7)having (8) select (9) distinct (10) order by(11) limit 
-
 ## 较为高级的应用
 ### 聚合(聚合函数)
 统计现有的多行数据，并输出统计结果。常用的5个聚合函数如下
@@ -136,15 +133,45 @@ order by，按照列或多列进行升序ASC 或 降序DESC 排序，默认为AS
 select * from tbname where conditions order by col1 desc|asc, col2 desc|asc,... 
 ```
 
-### 分页
-limit关键字
+### 分页： 有利于降低服务器的压力
+limit关键字: start是指从指定的start id开始（start id默认从0开始，这个id可以是0,1,2,3...这些数值，不间断，和数据表中的id列无关），count表示取其中的count行数据出来
 ```sql
 select * from tbname where conditions limit start,count
+select * from students where gender = 'F' limit (n-1)*m,m; n为页码，此时从1开始计算，m为每页要显示的数据条数
+```
+完整的查询语句
+```sql
+select distinct *
+from tbname
+where ...
+group by ... having ...
+order by ...
+limit start,count
+```
+**sql语句的执行顺序**：
+(1)from (2) on (3) join (4) where (5)group by(开始使用select中的别名，后面的语句中都可以使用)(6) avg,sum.... (7)having (8) select (9) distinct (10) order by(11) limit 
+
+
+
+
+## 3个重要的知识点
+关系，事务和索引
+### 关联，关系(relations)
+一对一，一对多，多对多 三种关系。关系也是一种数据，需要被保存。
+
+==外键约束==：建立关系字段后为**保证关系的正确性**而设定的约束。构建了外键约束，对于关联表中不存在的关联数据（如id），如果此时数据表的对应字段插入了这些不存在的关联数据会报错（即该约束规范了表的关联关系，使得在插入数据的过程中不会引入错误的关联数据）。
+```sql
+create table scores(
+  id int primary key auto_increment,
+  stuid int,
+  subid int,
+  score decimal(5,2),
+  foreign key(stuid) references students(id), => 对当前表的stuid构建外键，对应的是students表的id
+  foreign key(subid) references subject(id)
+);
 ```
 
-
-## 关联
-
+外键的级联操作
 
 ## 参考
 [面试中常见的mysql知识总结](https://blog.csdn.net/DERRANTCM/article/details/51534498)
