@@ -330,7 +330,9 @@ condition{actions} => 满足何种条件执行动作
 
 awk '{print $2;}' testfile => 打印第二列内容，即30，76，55； 打印第一列使用 $1 即可，可见提取列信息很简单
 
-awk '$2<75 {printf "%s\t%s\n",$0,"REORDER" $2>=75 {print $0}}' testfile # 其中$0表示整个当前行
+awk '$2<75 {printf "%s\t%s\n",$0,"REORDER"} $2>=75 {print $0}' testfile # 其中$0表示整个当前行
+等价于
+awk '{if($2<75) printf "%s\t%s\n",$0,"REORDER"} {if($2>=75) print $0}' testfile
 输出为:
   ProductA 30 REORDER
   ProductB 76
