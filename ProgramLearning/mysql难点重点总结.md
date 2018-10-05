@@ -154,18 +154,21 @@ select students.name,subjects.title,scores.score from scores join subjects on su
 
 [right join](http://www.w3school.com.cn/sql/sql_join_right.asp)
 
+
 完整的查询语句
 ```sql
 select distinct *
-from tbname
+from tbname1
+join tbname2 on relations between tb2 and tb1 join tbname3 on relations between tb3 and tb1 ...
 where ...
 group by ... having ...
 order by ...
 limit start,count
 ```
 **sql语句的执行顺序**：
-(1)from (2) on (3) join (4) where (5)group by(开始使用select中的别名，后面的语句中都可以使用)(6) avg,sum.... (7)having (8) select (9) distinct (10) order by(11) limit 
+(1)from (2) on (3) join (4) where (5)group by(开始使用select中的别名，后面的语句中都可以使用)(6) avg,sum.... (7)having (8) select (9) distinct (10) order by(11) limit 
 
+[sql语句执行顺序分析](https://blog.csdn.net/J080624/article/details/80703903)
 
 
 
