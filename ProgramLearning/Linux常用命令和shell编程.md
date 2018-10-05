@@ -357,8 +357,9 @@ awk 'BEGIN {FS=":"} {print $1;}' /etc/password => 按照 : 作为分隔符对tes
 ```
 
 高级应用：
-[统计词频](https://blog.csdn.net/u013246898/article/details/80240024)
-[awk常用命令集合](http://www.runoob.com/linux/linux-comm-awk.html)
-[awk数组](https://www.jianshu.com/p/64952ccbf733)
+1. [统计词频](https://blog.csdn.net/u013246898/article/details/80240024)
+2. [awk常用命令集合](http://www.runoob.com/linux/linux-comm-awk.html)
+3. [awk数组](https://www.jianshu.com/p/64952ccbf733)
+4. [awk字符串连接](https://www.cnblogs.com/chengmo/archive/2010/10/09/1846639.html)
 
 
