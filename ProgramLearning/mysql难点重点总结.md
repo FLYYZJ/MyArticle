@@ -139,6 +139,21 @@ limit关键字: start是指从指定的start id开始（start id默认从0开始
 select * from tbname where conditions limit start,count
 select * from students where gender = 'F' limit (n-1)*m,m; n为页码，此时从1开始计算，m为每页要显示的数据条数
 ```
+
+### 连接
+join（inner join），left join，right join
+示例：学生和成绩有直接关系，科目和成绩有直接关系，而学生和科目无直接关系，因此from取scroes表
+```sql
+select students.name,subjects.title,scores.score from scores join subjects on subjects.id = scores.subid inner join students on  students.id = scores.stuid;
+```
+**实际的三种连接方式的参考**：
+
+[inner join](http://www.w3school.com.cn/sql/sql_join_inner.asp)
+
+[left join](http://www.w3school.com.cn/sql/sql_join_left.asp)
+
+[right join](http://www.w3school.com.cn/sql/sql_join_right.asp)
+
 完整的查询语句
 ```sql
 select distinct *
@@ -159,7 +174,7 @@ limit start,count
 ### 关联，关系(relations)
 一对一，一对多，多对多 三种关系。关系也是一种数据，需要被保存。
 
-==外键约束==：建立关系字段后为**保证关系的正确性**而设定的约束。构建了外键约束，对于关联表中不存在的关联数据（如id），如果此时数据表的对应字段插入了这些不存在的关联数据会报错（即该约束规范了表的关联关系，使得在插入数据的过程中不会引入错误的关联数据）。
+**外键约束**：建立关系字段后为**保证关系的正确性**而设定的约束。构建了外键约束，对于关联表中不存在的关联数据（如id），如果此时数据表的对应字段插入了这些不存在的关联数据会报错（即该约束规范了表的关联关系，使得在插入数据的过程中不会引入错误的关联数据）。
 ```sql
 create table scores(
   id int primary key auto_increment,
@@ -171,8 +186,16 @@ create table scores(
 );
 ```
 
-外键的级联操作
+外键的级联操作： 删除掉某表中的数据时，如果有其它表格和该表格存在外键约束的时候，其它表格中的数据也要做相应操作，mysql设定了4种操作：
+```sql
+restrict： 抛出异常
+cascade： 关联数据也会被删除
+set null： 将外键设置为null
+no action： 不做任何操作
+```
+为了不误删除数据，推荐解决方案是使用逻辑删除而非物理删除的方案，即设置关联表中的数据为逻辑删除（根据要删除数据的外键），然后将外键约束设定为set null 或 no action，然后物理删除要删除的数据即可。
 
 ## 参考
 [面试中常见的mysql知识总结](https://blog.csdn.net/DERRANTCM/article/details/51534498)
+
 [sql语句的执行顺序](https://blog.csdn.net/u014044812/article/details/51004754)
