@@ -107,21 +107,40 @@ select * from students where age=(select min(age) from students); 选择年龄�
 ```
 ### 分组
 假设有如下students表格：
+
 |id| name        | age           | gender  |
 |--|:-----------:|:-------------:| -------:|
 |1| jack         | 14            |M    |
 |2| jane         | 13            |F    |
 |3| tim          | 12            |M    |
 |4| zoey         | 15            |F    |
+|4| joyce         | 15           |F    |
 
 ```sql
 select col1,col2,聚合 ... from tbname group by col1,col2,col3,....
 group by 将列中相同的值聚成一组
 
 查询男女的总数：
-select gender as sex,count(*) from students group by gender;
+select gender as sex,count(*) from students group by gender; => 按照执行顺序，先作聚合，即按照gender分成M 和 F两组，然后再做聚合和筛选数据
+```
+分组后的数据筛选： having，和where的区别在于having是在数据分组后再进行筛选，而where是在分组前进行数据的筛选
+```sql
+select col1,col2,聚合 ... from tbname group by col1,col2,col3,.... having col1,col2,...,聚合...
+select gender as sex,count(*) from students group by gender having gender='F'; 聚合结果后选出gender为F的那些数据的统计结果
+select gender as sex,count(*) from students group by gender having count(*)> 2; 聚合结果后选出分组的行数大于2的那些数据的结果
 ```
 
+### 排序
+order by，按照列或多列进行升序ASC 或 降序DESC 排序，默认为ASC；位于where句之后
+```sql
+select * from tbname where conditions order by col1 desc|asc, col2 desc|asc,... 
+```
+
+### 分页
+limit关键字
+```sql
+select * from tbname where conditions limit start,count
+```
 
 
 ## 关联
