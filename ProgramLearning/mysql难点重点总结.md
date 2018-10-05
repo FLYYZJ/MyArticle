@@ -71,19 +71,37 @@ delete from tbname where conditions; => 注意最好加入conditions，不加con
 update tbname set col1=v1,... where conditions; => 对应修改列和值
 ```
 
-## 高级查询
+查询条件判断中的运算符：
 ```sql
 select distinct colnames from tbname where conditions; => 查询不重复的数据 distinct,不同的colname用逗号分割
 
 where中常用的运算符：
   条件比较符： >=， >， <=， <， =， !=(<>)
   逻辑运算符： and，or，not
+  
   模糊查询： %condition%（（包含condition）），%condition（以condition结尾），condition%（以condition开头）,condition_（以condition开头且后面只包含一个字符，两个字符就是两个下划线）
   范围查询：in (v1,v2,v3,...) 查询字段满足在 (v1,v2,v3,...) 这个非连续范围内
            between v1 and v2 查询字段满足在 (v1,v2) 这个连续范围内
+  
+  空判断：is null 不能用 = null; is not null 不能用 != null;
+```
+**优先级 小括号 ＞ not ＞ 比较运算符 ＞ 逻辑运算符**
+
+## 聚合(聚合函数)
+统计现有的多行数据，并输出统计结果。常用的5个聚合函数如下
+```sql
+count(*) => 统计符合条件的列有多少行
+max(colname) => 找出符合条件的数据中的最大值
+min(colname) => 找出符合条件的数据中的最小值
+sum(colname) => 求符合条件的数据的和（数字类型的求和）
+avg(colname) => 求符合条件的数据的平均值（数字类型的平均值）
+```
+示例
+```
+select count(*) from students where id>3; 统计students表中 id>3 总共有多少个学生，执行顺序是先找出符合条件的数据，然后再做统计
 ```
 
-## 聚合
+
 
 
 ## 关联
