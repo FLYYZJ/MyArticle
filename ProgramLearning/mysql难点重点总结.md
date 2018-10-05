@@ -87,6 +87,10 @@ where中常用的运算符：
 ```
 **优先级 小括号 ＞ not ＞ 比较运算符 ＞ 逻辑运算符**
 
+**sql语句的执行顺序**：
+(1)from (2) on (3) join (4) where (5)group by(开始使用select中的别名，后面的语句中都可以使用)(6) avg,sum.... (7)having (8) select (9) distinct (10) order by(11) limit 
+
+
 ## 聚合(聚合函数)
 统计现有的多行数据，并输出统计结果。常用的5个聚合函数如下
 ```sql
@@ -96,9 +100,10 @@ min(colname) => 找出符合条件的数据中的最小值
 sum(colname) => 求符合条件的数据的和（数字类型的求和）
 avg(colname) => 求符合条件的数据的平均值（数字类型的平均值）
 ```
-示例
+示例：执行顺序是先执行where条件判断找到符合条件的数据，再作聚合
 ```
 select count(*) from students where id>3; 统计students表中 id>3 总共有多少个学生，执行顺序是先找出符合条件的数据，然后再做统计
+select * from students where age=(select min(age) from students); 选择年龄最小的那个学生的信息
 ```
 
 
@@ -109,3 +114,4 @@ select count(*) from students where id>3; 统计students表中 id>3 总共有多
 
 ## 参考
 [面试中常见的mysql知识总结](https://blog.csdn.net/DERRANTCM/article/details/51534498)
+[sql语句的执行顺序](https://blog.csdn.net/u014044812/article/details/51004754)
