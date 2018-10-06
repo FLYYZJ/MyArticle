@@ -274,7 +274,17 @@ commit; => 将内存中构建的临时表导入正式表中
 
 [mysql中的索引分析](https://www.cnblogs.com/whgk/p/6179612.html)
 
+显示/创建/删除索引
+```sql
+show index from tbname; => 显示表的索引
+create index indexname on tbname(colname(length)); => 指定单列索引和索引长度（string指定长度）
+create index indexname on tbname(colname(length)，colname(length),....); => 指定多列索引和索引长度
+drop index [indexname] on tbname;
+```
+
 ## 参考
 [面试中常见的mysql知识总结](https://blog.csdn.net/DERRANTCM/article/details/51534498)
 
 [sql语句的执行顺序](https://blog.csdn.net/u014044812/article/details/51004754)
+
+[mysql优化经验1](https://www.cnblogs.com/200911/p/5869123.html)
