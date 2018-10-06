@@ -277,7 +277,7 @@ commit; => 将内存中构建的临时表导入正式表中
 显示/创建/删除索引
 ```sql
 show index from tbname; => 显示表的索引
-create index indexname on tbname(colname(length)); => 指定单列索引和索引长度（string指定长度）
+create index indexname on tbname(colname(length)); => 指定单列索引和索引长度（一般设置为指定创建该字段时的长度）
 create index indexname on tbname(colname(length)，colname(length),....); => 指定多列索引和索引长度
 drop index [indexname] on tbname;
 ```
