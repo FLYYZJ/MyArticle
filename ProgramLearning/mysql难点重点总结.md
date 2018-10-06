@@ -217,8 +217,62 @@ create table areas(
   foreign key(pid) references areas(id) => 自关联，将关联的pid指定为本表中的id
 
 );
+
+查询时，利用连接方式(自连接)来查询
+select province.atitle as ptitle,city.atitle as ctitle from areas as city inner join areas as province on city.pid = province.id;
+
 ```
 
+### 视图
+对查询的一个封装，以维护查询(当对某一种查询多次使用时可以对视图进行封装，这样在再次调用该查询语句时可以直接调用视图，减少冗余操作)，视图定义为
+```sql
+create view v_stuscore as 
+select students.*, scores.score from scores
+inner join students on scores.stuid=students.id
+```
+此时i构建的视图会存放到数据库中（我们可以认为其构建了一张虚拟表），然后下次做相同的查询时，只需要从该视图中进行查询就可以了，例如查询上述sql语句(select students.\*, scores.score from scores inner join students on scores.stuid=students.id)获得的结果则可以用：
+```sql
+select * from v_stuscore; 
+```
+
+### 事务
+当一个业务逻辑需要多个sql语句协同才能完成，如果其中某条sql语句出错，则希望整个操作都会回退。使用事务可以完成回退的功能，保证业务逻辑的正确性。
+事务运用在数据表中数据被更改的时候，包括 更新，插入，删除等
+事务的四大特性：ACID
+```text
+A：原子性（Atomicity） 事务中的全部操作在数据库中是不可分割的，要么全部完成，要么都不执行
+C：一致性（Consistency）几个并行执行的事务，其执行结果必须和按某个顺序串行执行的结果一致
+I：隔离性（Isolation）事务的执行不受其它事务影响，事务执行的中间结果对其它事务必须是透明的
+D：持久性（Durability）对于已提交的事务，系统必须保证该事务对数据库的改变不被丢失，即使数据库出现故障
+```
+对于mysql表类型必须是innodb和bdb类型才可以使用事务。 => alter table tbname engine=innodb（对于原先不是innodb的数据表进行转换）
+
+实现事务语句：
+```sql
+开启 begin
+提交 commit
+回滚 rollback
+
+begin; => 构建一张临时表，存放中间结果
+更新语句1
+删除语句1
+...
+rollback => 回滚，放弃临时表 
+
+commit; => 将内存中构建的临时表导入正式表中
+```
+
+### 索引
+提高数据访问性能，主键和唯一索引都可以提高查询速度。建立索引提高查询速度，但是会花费一些内存方面的开销。
+
+尽量避免使用null，使用较为简单，或占内存越小的数据类型可以较好地提高查询速度。
+
+索引类型：
+
+> 单列索引：一个索引只包含单个列
+> 组合索引：一个索引包含多个列
+
+[mysql中的索引分析](https://www.cnblogs.com/whgk/p/6179612.html)
 
 ## 参考
 [面试中常见的mysql知识总结](https://blog.csdn.net/DERRANTCM/article/details/51534498)
