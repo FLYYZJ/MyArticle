@@ -1,3 +1,13 @@
+## 原理相关
+### 绘制ER图
+核心三要素：实体 属性和关系。ER图中，矩形代表实体，椭圆形代表属性，菱形代表关系，形状间用线段连接。
+
+一个简单的示例图：
+![](https://img-blog.csdn.net/20170101154040319?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvYmVsZW5feHVl/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
+
+
+1. [数据库ER图绘制技巧-1](https://jingyan.baidu.com/album/624e745961c6a134e9ba5a40.html?picindex=4)
+2. [数据库ER图绘制技巧-2](https://blog.csdn.net/belen_xue/article/details/52763629)
 ## 基本命令
 ```sql
 连接mysql：mysql -u username -p password -p port(默认3306) -h ipaddr(指定的IP地址)
