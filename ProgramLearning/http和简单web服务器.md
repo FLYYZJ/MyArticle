@@ -93,7 +93,7 @@ print('Serving HTTP on port 8080...')
 httpd.serve_forever()
 ```
 ### 减少if-else块（解析路径）
-```
+```python
 from wsgiref.simple_server import make_server
 
 def login():
