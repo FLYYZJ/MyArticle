@@ -46,6 +46,224 @@ index.html最后修改时间是不是这个，如果还是，那么您就不用�
 ```
 ![](https://images2015.cnblogs.com/blog/877318/201610/877318-20161026162455218-1166783413.png)
 
+
+## web框架概念
+特指为解决一个开放性问题而设计的具有一定约束性的支撑结构，使用框架可以帮你快速开发特定的系统(减少重复开发，减少冗余)。
+
+统一接口用于实现 接受HTTP请求、解析HTTP请求、发送HTTP响应（对请求进行解析和封装，基于nginx、apache或WSGI server），WSGI（Web Server Gateway Interface）接口，不用重复编写socket编程代码。
+
+### 简单的实现：运行后在浏览器中访问 127.0.0.1:8080实现访问。
+```python
+from wsgiref.simple_server import make_server
+def application(environ,start_response):
+    '''
+    :param environ:
+    :param start_response:
+    :return:
+    '''
+    print(environ) # 请求头中的内容，一个字典
+    start_response('200 ok',[('Content-Type','text/html'),('accept-encoding','gzip,dflate')]) # 设置请求头
+    return [b'<h1>Hello web!</h1>']
+httpd = make_server('',8080,application) # 监听到HTTP请求就会执行application函数
+print('Serving HTTP on port 8080...')
+
+httpd.serve_forever() # 持续监听HTTP请求
+```
+### 加入了路径判断的代码：
+```python
+from wsgiref.simple_server import make_server
+def application(environ,start_response):
+    '''
+    :param environ:
+    :param start_response:
+    :return:
+    '''
+    print('path',environ['PATH_INFO'])
+    start_response('200 ok',[('Content-Type','text/html'),('accept-encoding','gzip,dflate')]) # 设置请求头
+    path = environ['PATH_INFO']
+    if path == '/alex':
+        return [b'<h1>Hello alex!</h1>']
+    elif path == '/yuan':
+        return [b'<h1>Hello yuan!</h1>']
+    else:
+        return [b'<h1>404 not found</h1>'] # 可以将return的内容修改成一个html文件，然后反馈这个html文件的内容就可以了（动态形式）
+httpd = make_server('',8080,application) # 监听到HTTP请求就会执行application函数
+print('Serving HTTP on port 8080...')
+# 持续监听HTTP请求
+httpd.serve_forever()
+```
+### 减少if-else块（解析路径）
+```
+from wsgiref.simple_server import make_server
+
+def login():
+    return [b'<h1>please login</h1>']
+def register():
+    return [b'<h1>please register</h1>']
+def foo1():
+    return [b'<h1>hello alex</h1>']
+def foo2():
+    return [b'<h1>hello yuan</h1>']
+
+def router(): # 引入router，通过遍历来匹配路由
+    url_patterns = [
+        ('/login',login),
+        ('/register',register),
+        ('/yuan',foo2),
+        ('/alex',foo1),
+    ]
+    return url_patterns
+
+def application(environ,start_response):
+    '''
+
+    :param environ:
+    :param start_response:
+    :return:
+    '''
+    print('path',environ['PATH_INFO'])
+    start_response('200 ok',[('Content-Type','text/html'),('accept-encoding','gzip,dflate')]) # 设置请求头
+    path = environ['PATH_INFO']
+    url_patterns = router()
+    for item in url_patterns:
+        if item[0] == path:
+            return item[1]()
+    return [b'<h1>404 not found</h1>']
+
+
+
+httpd = make_server('',8080,application) # 监听到HTTP请求就会执行application函数
+
+print('Serving HTTP on port 8080...')
+
+# 持续监听HTTP请求
+httpd.serve_forever()
+
+```
+### 较为完整的架构：
+```python
+from wsgiref.simple_server import make_server
+def login(req = None):
+    print(req['QUERY_STRING'])
+    return [b'<h1>please login</h1>']
+def register(req = None):
+    return [b'<h1>please register</h1>']
+def foo1(req = None):
+    return [b'<h1>hello alex</h1>']
+def foo2(req = None):
+    return [b'<h1>hello yuan</h1>']
+def router():
+    url_patterns = [
+        ('/login',login),
+        ('/register',register),
+        ('/yuan',foo2),
+        ('/alex',foo1),
+    ]
+    return url_patterns
+
+def application(environ,start_response):
+    '''
+    :param environ:
+    :param start_response:
+    :return:
+    '''
+    print('path',environ['PATH_INFO'])
+    start_response('200 ok',[('Content-Type','text/html'),('accept-encoding','gzip,dflate')]) # 设置请求头
+    path = environ['PATH_INFO']
+    url_patterns = router()
+    for item in url_patterns:
+        if item[0] == path:
+            return item[1](environ)
+    return [b'<h1>404 not found</h1>']
+httpd = make_server('',8080,application) # 监听到HTTP请求就会执行application函数
+print('Serving HTTP on port 8080...')
+
+# 持续监听HTTP请求
+httpd.serve_forever()
+```
+login.html文件为：
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form action="http://127.0.0.1:8080/login" method="get">
+    <p>user name<input type="text" name="user"></p>
+    <p>user pwd<input type="text" name="pwd"></p>
+    <p><input type="submit">submit</p>
+</form>
+
+</body>
+</html>
+```
+### 加入了模板渲染
+```python
+from wsgiref.simple_server import make_server
+import time
+def login(req = None):
+    print(req['QUERY_STRING'])
+    return [b'<h1>please login</h1>']
+def register(req = None):
+    return [b'<h1>please register</h1>']
+def foo1(req = None):
+    return [b'<h1>hello alex</h1>']
+def foo2(req = None):
+    return [b'<h1>hello yuan</h1>']
+def show_time(req = None): # 运用到了简单的模板渲染
+    times = time.ctime()
+    with open('showtime.html','r') as f:
+        data = f.read()
+        data = data.replace('{{time}}',str(times))
+        return [data.encode('utf8')]
+def router():
+    url_patterns = [
+        ('/login',login),
+        ('/register',register),
+        ('/yuan',foo2),
+        ('/alex',foo1),
+        ('/show_time',show_time),
+    ]
+    return url_patterns
+def application(environ,start_response):
+    '''
+    :param environ:
+    :param start_response:
+    :return:
+    '''
+    print('path',environ['PATH_INFO'])
+    start_response('200 ok',[('Content-Type','text/html'),('accept-encoding','gzip,dflate')]) # 设置请求头
+    path = environ['PATH_INFO']
+    url_patterns = router()
+    for item in url_patterns:
+        if item[0] == path:
+            return item[1](environ)
+    return [b'<h1>404 not found</h1>']
+httpd = make_server('',8080,application) # 监听到HTTP请求就会执行application函数
+print('Serving HTTP on port 8080...')
+# 持续监听HTTP请求
+httpd.serve_forever()
+```
+对应的showtime.html
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<h1>time:{{time}}</h1>
+
+</body>
+</html>
+```
+
+
 ## 参考
 [http概念理解](http://www.cnblogs.com/yuanchenqi/articles/6000358.html)
 
