@@ -1,3 +1,8 @@
+### 设计上的一些原则
+1. 保证视图函数中的代码是简洁易懂的，尽量将所需的功能封装成外部模块中的一个函数，以供调用
+2. 尽量将容易被证伪（if...else...）的操作放在前面，这样可以减少内部的操作时间
+3. 阅读源码的次序是先了解功能，架构，随后再到需要仔细阅读的函数中阅读细节代码
+
 ### flask唯一URL原则
 唯一的的原则是一个视图页面只需要对应唯一一个URL，不需要令两个URL指向同一个视图页面（涉及SEO优化）。
 
@@ -41,6 +46,24 @@ response = make_response('<h1>Hello world</h1>',200) # 指定返回内容和状�
 response.headers=headers # 返回头信息
 return response # 返回响应对象
 ```
+提供数据的api接口（例如json格式的数据）
+```python
+headers={
+  'content-type':'applications/json,
+  ....
+}
+response = make_response(jsondata,statuscode) => 传入json数据和状态码即可
+```
+其实可以不需要使用response对象也可以返回数据
+```python
+return content,statuscode,headers and other info => 简易的响应内容返回方式，flask会在后台将其封装成response对象
+```
 
-
+### url参数传递
+此时q和page会作为url中传递到视图函数的参数
+```python
+@app.route('/book/search/<q>/<page>')
+def function(q,page):
+  ...
+```
 
