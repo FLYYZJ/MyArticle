@@ -71,6 +71,46 @@ flask在url和视图函数中间加入endpoint概念，为实现反向路由提�
 flask的url要顺利访问到视图函数，需要urlmap对象和viewfunctions对象中分别存有url和对应的视图函数，这样才能实现索引。
 ![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20181015171931.png)
 
+url参数传递，对于不是使用?param1=val1&param2=val2这种形式，可以直接放入装饰器的参数列表中，如下
+```python
+@web.route('/book/search/<q>/<page>') # 视图函数插入蓝图中
+def search(q,page):
+    '''
+        q：普通关键字 isbn
+        page：
+        :return:
+    '''
+    isbn_or_key = is_isbn_or_key(q)
+    if isbn_or_key == 'isbn':
+        res = YuShuBook.search_by_isbn(q)
+    else:
+        res = YuShuBook.search_by_keyword(q)
+    # res不是字符串而是字典，因此要访问需转换为字符串（序列化）
+    # return json.dumps(res),200,{'content-type':"application/json"}
+    return jsonify(res) # 等价于上面的一串语句
+```
+反之，需要使用Request对象(包含全部请求信息，是flask后台构建的)来接收?后面所带的参数
+```python
+@web.route('/book/search') # 视图函数插入蓝图中
+def search_args():
+    '''
+        q：普通关键字 isbn
+        page：
+        :return:
+    '''
+    q = request.args['q'] # 获取参数,q至少一个字符，长度限制
+    page = request.args['page'] # 正整数，且最大值限制
+    isbn_or_key = is_isbn_or_key(q)
+    if isbn_or_key == 'isbn':
+        res = YuShuBook.search_by_isbn(q)
+    else:
+        res = YuShuBook.search_by_keyword(q)
+    # res不是字符串而是字典，因此要访问需转换为字符串（序列化）
+    # return json.dumps(res),200,{'content-type':"application/json"}
+    return jsonify(res) # 等价于上面的一串语句
+```
+
+
 ### 蓝图 blueprint
 蓝图是夹在app和视图函数之间的一层，可以解决flask中视图函数分文件的问题
 ![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181015175413.png)
