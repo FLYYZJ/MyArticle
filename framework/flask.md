@@ -115,3 +115,14 @@ def search_args():
 蓝图是夹在app和视图函数之间的一层，可以解决flask中视图函数分文件的问题
 ![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181015175413.png)
 
+### wtform进行参数校验
+```python
+class SearchForm(Form):
+    q = StringField(DataRequired(),validators=[Length(min=1,max=30)]) # 指定q为字符串类型，且长度有限制，必须有数据（不能为空格）
+    page = IntegerField(validators=[NumberRange(min=1,max=99)],default=1)
+------------------------------------------
+form = SearchForm(request.args) # 表单对象
+if form.validate(): # 表单得到验证
+  q = form.q.data.strip()
+  page = form.page.data # 可以得到默认值
+```
