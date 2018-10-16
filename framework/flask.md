@@ -129,3 +129,43 @@ if form.validate(): # 表单得到验证
 
 
 ### 数据库相关 模型类
+三种创建数据库的方式- model first，Database First，Code First
+1. Database First：直接在数据库中建表同时传入数据
+2. model first：利用navicat提供的ER图工具创建相应的关系图，然后自动生成对应的数据库
+3. code first：模型层
+
+基于sqlalchemy进行模型层的封装操作
+```python
+from sqlalchemy import Column, Integer, String
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy() # 实例化sqlalchemy对象
+class Book(db.Model): # 定义模型
+    id = Column(Integer,primary_key=True,autoincrement=True)
+    title = Column(String(50),nullable=False)
+    author = Column(String(30),nullable=False,default='未名')
+    binding = Column(String(20))
+    publisher = Column(String(50))
+    price = Column(String(20))
+    isbn = Column(String(15),nullable=False,unique=True)
+    pages = Column(Integer)
+    pubdate = Column(String(20))
+    summary = Column(String(1000))
+    image = Column(String(50))
+
+```
+同时需要注册和绑定app
+```python
+db.init_app(app)
+db.create_all(app=app)
+```
+
+
+
+
+
+
+
+
+
+
+
