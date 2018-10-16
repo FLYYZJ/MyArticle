@@ -161,6 +161,16 @@ db.init_app(app)
 db.create_all(app=app)
 ```
 
+### flask开启多线程
+对象是保存状态的地方。
+
+线程（是由webserver进行调度，不由flask进行调度）
+
+flask在app.run方法中设置threaded参数为True实现flask开启多线程，在app.run方法中设置process参数为1,2,3,...实现flask设置进程数。
+
+线程隔离：
+
+
 ### flask常见误区
 错误： working outside application context
 本地代理-LocalProxy：代理模式——设计模式内容
@@ -170,7 +180,10 @@ flask中的上下文（对象，对一系列flask上下文进行封装）： 应
 Flask核心对象存储在AppContext（封装Flask核心对象，因为Flask保存一些核心操作，而同时也有也有一些操作需要核心对象之外的操作和数据，因此AppContext进行封装）中,Request对象存储在RequestContext中。
 
 
+当用户发来一个请求后，会检查_app_ctx_stack（这个栈可以用app.app_context()方法得到，有push和pop两个方法）是否为空，如果为空则推入一个app对象，随后再往_request_ctx_stack推入request对象（基于用户的请求构造而成）。当请求结束后，app对象和request对象会被弹出。因此一切操作都是基于用户发来的请求进行的，包括入栈和出栈操作。
+current_app 和 request 对象都是指向这两个栈顶的元素。LocalProxy not bind 出现的情况是因为两个栈同时为空的情况。
 
+实现上下文协议的对象可以使用with语句，一个类如果定义了__enter__ 和 __exit__ 函数则构成一个上下文管理器，此时可以使用with语句。
 
 
 
