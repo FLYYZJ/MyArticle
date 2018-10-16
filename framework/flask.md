@@ -126,3 +126,6 @@ if form.validate(): # 表单得到验证
   q = form.q.data.strip()
   page = form.page.data # 可以得到默认值
 ```
+
+
+### 数据库相关 模型类
