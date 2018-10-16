@@ -132,7 +132,9 @@ if form.validate(): # 表单得到验证
 三种创建数据库的方式- model first，Database First，Code First
 1. Database First：直接在数据库中建表同时传入数据
 2. model first：利用navicat提供的ER图工具创建相应的关系图，然后自动生成对应的数据库
-3. code first：模型层
+3. code first：模型层，和ORM不同。code first只关注数据怎么创建。
+
+业务逻辑最好写在模型层，因为数据库的构建和各表间的关系和业务相关度高，因此最好构建在模型层。
 
 基于sqlalchemy进行模型层的封装操作
 ```python
@@ -159,10 +161,13 @@ db.init_app(app)
 db.create_all(app=app)
 ```
 
+### flask常见误区
+错误： working outside application context
+本地代理-LocalProxy：代理模式——设计模式内容
 
+flask中的上下文（对象，对一系列flask上下文进行封装）： 应用上下文 Flask封装，请求上下文 Request封装
 
-
-
+Flask核心对象存储在AppContext（封装Flask核心对象，因为Flask保存一些核心操作，而同时也有也有一些操作需要核心对象之外的操作和数据，因此AppContext进行封装）中,Request对象存储在RequestContext中。
 
 
 
