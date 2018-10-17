@@ -168,7 +168,32 @@ db.create_all(app=app)
 
 flask在app.run方法中设置threaded参数为True实现flask开启多线程，在app.run方法中设置process参数为1,2,3,...实现flask设置进程数。
 
-线程隔离：
+**线程隔离的意义在于 使当前线程可以正确引用到其创建的对象，而不会是引用到其它线程所创建的对象。**
+
+flask中的线程隔离：利用字典结构和线程id号（线程唯一标识）实现请求对象获取线程信息，即请求对象可以知道当前访问服务器对应的线程是哪个以及其相关信息。
+```python
+request = {t_key1:Request1,t_key2:Request2,...}
+```
+
+flask中的线程隔离对象Local，werkzeug local Local，本质是一个字典
+```python
+myobj = Local()
+myobj.b = 1
+
+def worker():
+  myobj,b = 2
+  print(myobj.b) # 输出2
+
+newt=threading.Thread(target=worker,name='t1')
+newt.start()
+time.sleep(1)
+print(myobj.b) # 输出1
+```
+
+线程隔离栈 LocalStack()：push，pop和top方法，有线程隔离的特性。
+
+
+
 
 
 ### flask常见误区
@@ -185,5 +210,5 @@ current_app 和 request 对象都是指向这两个栈顶的元素。LocalProxy 
 
 实现上下文协议的对象可以使用with语句，一个类如果定义了__enter__ 和 __exit__ 函数则构成一个上下文管理器，此时可以使用with语句。
 
-
+![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181016210402.png)
 
