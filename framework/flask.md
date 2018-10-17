@@ -192,10 +192,6 @@ print(myobj.b) # 输出1
 
 线程隔离栈 LocalStack()：push，pop和top方法，有线程隔离的特性。
 
-
-
-
-
 ### flask常见误区
 错误： working outside application context
 本地代理-LocalProxy：代理模式——设计模式内容
@@ -211,4 +207,14 @@ current_app 和 request 对象都是指向这两个栈顶的元素。LocalProxy 
 实现上下文协议的对象可以使用with语句，一个类如果定义了__enter__ 和 __exit__ 函数则构成一个上下文管理器，此时可以使用with语句。
 
 ![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181016210402.png)
+
+### 模型层（view层）
+从数据库或者API中获取的数据是原始数据，直接传给视图函数处理；而用户获取的数据展示都是体现在页面上，而页面的结构不同，可能所需的数据也不同（不需要所有数据，需要改变数据的结构或者需要多种数据）
+
+在原始数据到页面间加入viewmodel层可以对传入页面的数据做一定的修饰和改变，从而适配页面的需求。
+
+![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181017114259.png)
+
+
+
 
