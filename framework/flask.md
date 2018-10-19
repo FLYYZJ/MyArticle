@@ -267,3 +267,7 @@ url_for:通过endpoint使得可以反向得到视图函数的url
 ```python
 SECRET_KEY = 任意对一无二的字符串
 ```
+```html
+{% set messages = get_flashed_messages(category_filter=category_name) %}  得到的message仅在当前block中有效
+{% with messages = get_flashed_messages(category_filter=category_name) %} {{messages}} {% endwith %} 此时message仅在with块中有效，with限定了变量的作用域
+```
