@@ -215,6 +215,12 @@ current_app 和 request 对象都是指向这两个栈顶的元素。LocalProxy 
 
 ![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181017114259.png)
 
-
+模板：render方法进行渲染，可以有多个varname，随意取名，htmlname是放在templates目录下的（app = Flask(__name__)该句对应的目录为根目录，templates目录也在该根目录下）对应的html文件
+```python
+@app.route('/test')
+def test():
+  r = {'t1':'hello', 't2':'world'}
+  return render_template(htmlname,varname = r) 
+```
 
 
