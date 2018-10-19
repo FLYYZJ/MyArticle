@@ -215,7 +215,7 @@ current_app 和 request 对象都是指向这两个栈顶的元素。LocalProxy 
 
 ![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181017114259.png)
 
-模板：render方法进行渲染，可以有多个varname，随意取名，htmlname是放在templates目录下的（app = Flask(__name__)该句对应的目录为根目录，templates目录也在该根目录下）对应的html文件
+模板：render方法进行渲染，可以有多个varname，随意取名，htmlname是放在templates目录下的（app = Flask(__name__)该句对应的目录为根目录，templates目录也在该根目录下）对应的html文件，可以在注册app或蓝图的地方定义模板文件存放的位置（即指定路径，蓝图的根目录是app目录，而app目录是根目录，传入的路径是相对路径）
 ```python
 @app.route('/test')
 def test():
@@ -223,4 +223,47 @@ def test():
   return render_template(htmlname,varname = r) 
 ```
 
+模板中解析数据，flask是基于jinja2模板引擎实现的。在模板（HTML文件中）中使用方式和Django是一致的。jinja2常用语法示例：
+```html
+{{data.age}} == {{data['age']}} data是由视图函数中传入的字典或对象
 
+for循环
+{% for foo in [1,2,3] %} 这个列表也可以从视图函数传入
+  {{foo}} 或 标签语言 输出1，2，3
+{% endfor %}
+
+{% for k,v in data.items() %} 针对字典数据，该字典是由视图函数传入
+  {{k}}:{{v}} 
+{% endfor %}
+
+if条件控制(可使用and 和 or 等条件符)
+{% if data.age == 18 %}
+  {{data.name}} 或 标签语言
+{% elif data.age < 18 %}
+  {{data.name}} 或 标签语言
+{% else %}
+  {{data.name}} 或 标签语言
+{% endif %}
+```
+#### 模板继承
+和django一致，需要在base.html中写入block，即{% block blockname %} {% endblock %}，引入模板是{% extends 'base.html' %}。在继承模板的文件中，使用{% block blockname(在base.html中定义的某个block) %} {% super() %}（如果要加入父模板中的内容就要该方法） 写入自定义内容 {% endblock %}
+
+#### 模板中的过滤器和管道
+```html
+{{data.name | default('未名')}} 当name属性不存在时会输出未名，竖线可以理解为Linux的管道命令
+{{ data | length() }} ： 获取data的长度
+```
+
+#### 反向URL：
+url_for:通过endpoint使得可以反向得到视图函数的url
+```html
+{{url_for('static',filename="test.css")}} 前面的static是相对路径（相对于app 根路径），filename是要传入的静态文件（css，图片，js）
+```
+
+#### 消息闪现
+在视图函数中使用flash函数，例如flash('2123 231 23'),当然flash可以有多个，同时可以设置这些flash消息的分类。在模板文件中使用 {% set messages = get_flashed_messages(category_filter=category_name) %} 获取闪现数据，当然其中的category_filter参数可以不用传递。
+
+此时需要在配置文件中写入SECRET_KEY，才能使用flash数据
+```python
+SECRET_KEY = 任意对一无二的字符串
+```
