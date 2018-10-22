@@ -160,6 +160,7 @@ class Book(db.Model): # 定义模型
 db.init_app(app)
 db.create_all(app=app)
 ```
+如果再存储数据时有某个字段不存在，但是实际在模型类中有定义，则此时可以将对应的表去除，然后再重新启动程序生成表，这样可以补充那个字段，或者手动补充缺失的字段。
 
 ### flask开启多线程
 对象是保存状态的地方。
@@ -272,3 +273,12 @@ SECRET_KEY = 任意对一无二的字符串
 {% set messages = get_flashed_messages(category_filter=category_name) %}  得到的message仅在当前block中有效
 {% with messages = get_flashed_messages(category_filter=category_name) %} {{messages}} {% endwith %} 此时message仅在with块中有效，with限定了变量的作用域
 ```
+
+## flask中的method —— GET和POST方法
+```python
+@web.route('/register', methods=['GET', 'POST']) # 在后面代入methods方法，列表，传入方法有GET 和 POST 两种
+request.form # 获得post方式提交的表单数据
+```
+
+
+
