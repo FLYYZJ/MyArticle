@@ -251,6 +251,7 @@ if条件控制(可使用and 和 or 等条件符)
 #### 模板中的过滤器和管道
 ```html
 {{data.name | default('未名')}} 当name属性不存在时会输出未名，竖线可以理解为Linux的管道命令
+{{data.name | default('未名',true)}} 当name属性不存在或name属性存在但为空值时会输出未名
 {{ data | length() }} ： 获取data的长度
 ```
 
