@@ -280,5 +280,6 @@ SECRET_KEY = 任意对一无二的字符串
 request.form # 获得post方式提交的表单数据
 ```
 
+### MVC的业务逻辑应该写在Model层中，而不是写在Controller层中，模型层和业务相关
 
 
