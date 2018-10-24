@@ -282,4 +282,32 @@ request.form # 获得post方式提交的表单数据
 
 ### MVC的业务逻辑应该写在Model层中，而不是写在Controller层中，模型层和业务相关
 
+## 可调用对象
+在类中实现__call__方法就可以将对象作为函数使用
+1. 简化对象下方法的调用（一般当对象下只有一个方法或者某个方法被经常调用，则可以使用这个可调用对象的方法）
+2. 模糊了对象和函数的区别，用于通用调用接口
+```python
+class A:
+  def go(self):
+    return object()
+class B:
+  def run(self):
+    return object()
+def func():
+  return object()
+
+def main(param):
+  # main调用传入的参数获得object
+  # 对应A，要调用A.go()
+  # 对应B，要调用B.run()
+  object = param()
+
+main(A())
+main(B())
+main(func)
+
+# 如果在A和B中实现了__call__方法，则只需要传入对象，
+```
+
+
 
