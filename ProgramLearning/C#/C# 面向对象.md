@@ -174,5 +174,25 @@ data as Document; // 将data对象转为Document类型，如果转换不成功�
 
 ![](images/CSharp-interface.png)
 
-接口的特点如下：  
+接口的特点如下：注意接口中不带字段，可带属性，且属性不引用支持字段（就是没有一个私有字段被属性支持）  
+
 ![](images/CSharp-interface-property.png)
+
+![](images/CSharp-interface-property1.png)
+
+接口成员调用:
+- 显式成员实现：将对象转型为接口。
+```C#
+public class Contact : PadItem, IListable
+{
+    // ...
+    string[] IListable.ColumnValues // 显式指明了是接口的成员
+    {
+        //....
+    }
+}
+```
+- 隐式成员实现：只要求成员为公有成员，且签名和接口成员的签名一致，不需要用override关键字或其它指示符。一般是采用隐式方式实现。
+
+接口可以被继承（单继承和多继承均可），接口的常用法是用于转换类实例为接口实例，这种转换是隐式转换的。
+
