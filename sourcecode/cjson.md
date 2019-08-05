@@ -5,7 +5,7 @@
 [volatile关键字作用](https://www.cnblogs.com/yc_sunniwell/archive/2010/07/14/1777432.html)
 
 ## _MSC_VER
-代表的是Visual studio的c++编译器的主版本和副版本号。
+代表的是Visual studio的c++编译器的主版本和副版本号。可以通过这个标志来确定当前系统是Windows还是其它类型系统。
 
 ## pragma
 用于设定编译器的状态或者是指示编译器完成一些特定的动作
@@ -28,7 +28,7 @@ comment-type类型：
 
 # cjson风格
 ### 1、将一些常用操作（同一模式下的操作，例如内存管理等）封装到结构体中
-如下所示，定义一个内部调用的hooks结构体，结构体中保存了3个关于内存分配（分配内存，释放内存，重新分配内存）的方法，allocate，deallocate和reallocate。同时针对不同的操作系统环境，分配内存的方式不一样。这3个钩子函数会对应到实际的内部内存分配函数上。
+如下所示，定义一个内部调用的hooks结构体，结构体中保存了3个关于内存分配（分配内存，释放内存，重新分配内存）的方法，allocate，deallocate和reallocate。同时针对不同的操作系统环境，分配内存的方式不一样。这3个钩子函数会对应到实际的内部内存分配函数上。而后续调用这个函数基本使用全局的结构体进行调用。
 ![内存分配钩子函数结构体](images/cjson-1.png)
 ![实际内存分配函数](images/cjson-2.png)
-
+![利用一个全局的global_hooks来得到这些分配内存的功能](images/cjson-3.png)
