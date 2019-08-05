@@ -530,7 +530,7 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
     }
     input_buffer->depth++;  // 重置当前链表深度
 
-    if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != '{'))  // 错误情况，两层的"{"或者到了文件尾，已经无法读值，但是没有结束。
+    if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != '{'))  // 错误情况，当前字符不是 { 或者已经无法读值。
     {
         goto fail; /* not an object */
     }
@@ -792,7 +792,7 @@ typedef struct
 /* Render an object to text. */
 static cJSON_bool print_object(const cJSON * const item, printbuffer * const output_buffer)
 {
-    unsigned char *output_pointer = NULL;
+    unsigned char *output_pointer = NULL;  // 始终指向输出的json字符串的最后一个字符，即output_buffer中buffer对应的最后一个字符位置
     size_t length = 0;
     cJSON *current_item = item->child;
 
@@ -901,5 +901,95 @@ static cJSON_bool print_object(const cJSON * const item, printbuffer * const out
     output_buffer->depth--;  // 退出了一个object，少了一层
 
     return true;
+}
+```
+两个辅助函数，用于确保内存足够
+```C
+/* realloc printbuffer if necessary to have at least "needed" bytes more */
+static unsigned char* ensure(printbuffer * const p, size_t needed)
+{
+    unsigned char *newbuffer = NULL;  // 要返回的newbuffer
+    size_t newsize = 0;
+
+    if ((p == NULL) || (p->buffer == NULL))  // 传进来的p有问题
+    {
+        return NULL;
+    }
+
+    if ((p->length > 0) && (p->offset >= p->length))  // 此时offset已经超过了p的length（实际分配的大小），则非法
+    {
+        /* make sure that offset is valid */
+        return NULL;
+    }
+
+    if (needed > INT_MAX)  // 保证不要请求超过限制的空间
+    {
+        /* sizes bigger than INT_MAX are currently not supported */
+        return NULL;
+    }
+
+    needed += p->offset + 1;  // 计算所需的空间
+    if (needed <= p->length)  // 所需空间小于总长度
+    {
+        return p->buffer + p->offset;  // 直接返回当前指针的位置
+    }
+
+    if (p->noalloc) {  // 无法分配空间？
+        return NULL;
+    }
+
+    /* calculate new buffer size 确保空间不大于INT_MAX */
+    if (needed > (INT_MAX / 2))
+    {
+        /* overflow of int, use INT_MAX if possible */
+        if (needed <= INT_MAX)
+        {
+            newsize = INT_MAX;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    else
+    {
+        newsize = needed * 2;
+    }
+
+    if (p->hooks.reallocate != NULL)
+    {
+        /* reallocate with realloc if available */
+        newbuffer = (unsigned char*)p->hooks.reallocate(p->buffer, newsize);  // 重新分配空间
+        if (newbuffer == NULL)  // 分配失败则回滚
+        {
+            p->hooks.deallocate(p->buffer);
+            p->length = 0;
+            p->buffer = NULL;
+
+            return NULL;
+        }
+    }
+    else  // 如果此时没有给p指定分配空间的结构体
+    {
+        /* otherwise reallocate manually 手动分配空间 */
+        newbuffer = (unsigned char*)p->hooks.allocate(newsize);
+        if (!newbuffer)
+        {
+            p->hooks.deallocate(p->buffer);
+            p->length = 0;
+            p->buffer = NULL;
+
+            return NULL;
+        }
+        if (newbuffer)
+        {
+            memcpy(newbuffer, p->buffer, p->offset + 1);
+        }
+        p->hooks.deallocate(p->buffer);
+    }
+    p->length = newsize;  // 重置当前的空间大小
+    p->buffer = newbuffer;
+
+    return newbuffer + p->offset;  // 返回当前的指针位置
 }
 ```
