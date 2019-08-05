@@ -18,4 +18,41 @@ MyDel delVar; // 声明
 delVar = new MyDel(myInstObj.MyM1); // 利用实例方法进行初始化
 MyDel delVar; // 声明
 delVar = new MyDel(SClass.MyM1); // 利用静态方法进行初始化
+/* 上述等价于 */
+delVar = myInstObj.MyM1;
+delVar = SClass.MyM1;
 ```
+上述的初始化所得的delVar和dVar的实质是一个引用，分别指向内存中的委托对象。此时除了为委托分配内存，同时也会将第一个方法放入委托的调用列表中。
+![](images/delegate-3.png)
+委托变量可随意更换引用
+```C#
+MyDel delVar;
+delVar = SClass.MyM1;
+...
+delVar = myInstObj.MyM1; // 更换了引用的委托
+```
+
+## 多播委托（组合委托）
+使用 + 和 - 进行委托的组合，如：
+```C#
+MyDel delVar1 = SClass.MyM1;
+MyDel delVar2 = myInstObj.MyM1;
+MyDel delVar3 = delVar1 + delVar2;  // 
+```
+![](images/delegate-4.png)
+
+增加委托方法
+```C#
+MyDel delVar1 = SClass.MyM1;
+delVar += SC1.m3;
+delVar += X.Act;
+```
+减少委托方法
+```C#
+MyDel delVar1 = SClass.MyM1;
+delVar += SC1.m3;
+delVar += X.Act;
+
+delVar -= X.Act;
+```
+![](images/delegate-5.png)
