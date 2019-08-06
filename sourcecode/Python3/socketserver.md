@@ -16,7 +16,7 @@ selectors模块提供的API是基于事件的。selectors对象提供socket要�
 3、第三个函数判断链表是否为空  
 4、最大连接数没有限额
 
-官方示例：
+官方示例：下述示例中可以看出
 ```python
 
 import selectors
@@ -55,6 +55,17 @@ while True:
         callback(key.fileobj, mask)
 ```
 
+selectors的select方法：
+
+abstractmethod select(timeout=None)
+Wait until some registered file objects become ready, or the timeout expires.等待某个注册的文件对象准备好，或者超时报错。
+
+If timeout > 0, this specifies the maximum wait time, in seconds. If timeout <= 0, the call won’t block, and will report the currently ready file objects. If timeout is None, the call will block until a monitored file object becomes ready. 超时时间设置为>0，表示最大等待时间; <= 0 表示无等待，直接返回当前已准备好的文件对象，None则表示等待到有文件对象准备好位置
+
+This returns a list of (key, events) tuples, one for each ready file object. 返回值是一个(key,event)的tuple 列表，保存已经准备好的文件对象
+
+key is the SelectorKey instance corresponding to a ready file object. events is a bitmask of events ready on this file object.
+
 ## threading模块（event部分）
 
 通过threading.Event()可以创建一个事件管理标志，该标志（event）默认为False，event对象主要有四种方法可以调用：
@@ -64,38 +75,44 @@ while True:
 - event.clear()：将event的标志设置为False，调用wait方法的所有线程将被阻塞；
 - event.isSet()：判断event的标志是否为True。
 
+## socket模块
+#### 1、SO_REUSEADDR选项：
+通常一个服务器进程终止后，操作系统会保留几分钟它的端口，从而防止其他进程在超时之前使用这个端口。如果设置SO_REUSEADDR为true，操作系统就会在服务器socket被关闭或服务器终止后马上释放该服务器的端口。
+
+#### 2、setsockopt(level,optname,value) 和 getsockopt(level,optname,buflen)
+value参数的内容是由level和optname决定的。level定义了哪个选项将被使用。通常情况下是SOL_SOCKET。意思是正在使用socket选项。还可以通过设置一个特殊协议号码来设置协议选项。SOL_SOCKET的常用选项如下
+
+![](images/socketserver-3.png)
+
+  
 
 
 # 源码解析
 ![](images/socketserver-1.png)
 ![](images/socketserver-2.png)
 
-### BaseServer
-全部Server的基类，定义如下方法
-- 自定义方法  
-    - __init__(server_address, RequestHandlerClass)
-    - serve_forever(poll_interval=0.5)：每次只能处理1个请求，直到退出，每隔poll_interval确定是否要shutdown，无视timeout参数
-    - shutdown()
-    - handle_request()  # if you do not use serve_forever()
-    - fileno() -> int   # for selector
 
-- 待覆盖方法  
-    - server_bind()
-    - server_activate()：启用server
-    - get_request() -> request, client_address
-    - handle_timeout()
-    - verify_request(request, client_address)
-    - server_close()
-    - process_request(request, client_address)
-    - shutdown_request(request)
-    - close_request(request)
-    - service_actions()
-    - handle_error()
-- 类变量
-    - timeout 超时时间
-    - address_family
-    - socket_type
-    - allow_reuse_address
-- 实例变量
-    - RequestHandlerClass（处理请求的class）
-    - socket
+  
+整个代码的框架大致如下：socket_server中包含了几个Server的定义，以及Handler 还有 Mixin。
+
+一般我们使用定义对应的Handler，然后选择合适的Server并对Server加入合适的Mixin来实现多线程并发Socket服务。
+```
++------------+
+| BaseServer |
++------------+
+        |
+        v
++-----------+        +------------------+
+| TCPServer |------->| UnixStreamServer |
++-----------+        +------------------+
+        |
+        v
++-----------+        +--------------------+
+| UDPServer |------->| UnixDatagramServer |
++-----------+        +--------------------+
+```
+
+### BaseServer
+全部Server的基类，抽象了各个TCPServer和UDPServer都会使用的操作方法，正式使用中并不会调用到这个类，而是调用其子类（观察代码可以发现其中缺失一些变量，而这些变量都在子类中声明）
+
+

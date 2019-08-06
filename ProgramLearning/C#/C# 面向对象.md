@@ -413,3 +413,159 @@ public class C : B
     public sealed override void DoWork() { }  // 利用sealed修饰符，此后的继承自C的类无法覆写DoWork方法，因为此时DoWork已经不是虚方法
 }
 ```
+
+已替换或重写某个方法或属性的派生类仍然可以使用 base 关键字访问基类的该方法或属性
+```C#
+public class Base
+{
+    public virtual void DoWork() {/*...*/ }
+}
+public class Derived : Base
+{
+    public override void DoWork()
+    {
+        //Perform Derived's work here
+        //...
+        // Call DoWork on base class
+        base.DoWork();  // 利用base关键字访问父类的方法
+    }
+}
+```
+
+## 抽象类和密封类
+
+抽象类不能实例化。 抽象类的用途是提供一个可供多个派生类共享的通用基类定义。 例如，类库可以定义一个抽象类，将其用作多个类库函数的参数，并要求使用该库的程序员通过创建派生类来提供自己的类实现。  
+抽象类也可以定义抽象方法。 方法是将关键字 abstract 添加到方法的返回类型的前面。
+
+```C#
+public abstract class A
+{
+    // Class members here.
+}
+public abstract class A
+{
+    public abstract void DoWork(int i);
+}
+```
+
+
+密封类不能用作基类。 因此，它也不能是抽象类。 密封类禁止派生。 由于密封类从不用作基类，所以有些运行时优化可以略微提高密封类成员的调用速度。  
+在对基类的虚成员进行重写的派生类上，方法、索引器、属性或事件可以将该成员声明为密封成员。 在用于以后的派生类时，这将取消成员的虚效果。 方法是在类成员声明中将 sealed 关键字置于 override 关键字前面。  
+```C#
+public sealed class D
+{
+    // Class members here.
+}
+public class D : C
+{
+    public sealed override void DoWork() { }
+}
+```
+
+## 静态类和静态类成员
+静态类基本上与非静态类相同，但存在一个差异：**静态类无法实例化**。 换句话说，无法使用 new 运算符创建类类型的变量。 由于不存在任何实例变量，因此可以使用类名本身访问静态类的成员。  
+一般用途：静态类可以用作只对输入参数进行操作并且不必获取或设置任何内部实例字段的方法集的方便容器。
+#### 特点
+- 只包含静态成员。
+- 无法进行实例化。
+- 会进行密封。
+- 不能包含实例构造函数。
+
+创建静态类基本上与创建只包含静态成员和私有构造函数的类相同。 私有构造函数可防止类进行实例化。 使用静态类的优点是编译器可以进行检查，以确保不会意外地添加任何实例成员。 编译器可保证无法创建此类的实例。  
+静态类会进行密封，因此不能继承。 它们不能继承自任何类（除了 Object）。 静态类不能包含实例构造函数；但是，它们可以包含静态构造函数（只能构造一次）。 如果非静态类包含了需要进行有意义的初始化的静态成员，则它也应该定义一个静态构造器。
+```C#
+public static class TemperatureConverter
+{
+    public static double CelsiusToFahrenheit(string temperatureCelsius)
+    {
+        // Convert argument to double for calculations.
+        double celsius = Double.Parse(temperatureCelsius);
+
+        // Convert Celsius to Fahrenheit.
+        double fahrenheit = (celsius * 9 / 5) + 32;
+
+        return fahrenheit;
+    }
+
+    public static double FahrenheitToCelsius(string temperatureFahrenheit)
+    {
+        // Convert argument to double for calculations.
+        double fahrenheit = Double.Parse(temperatureFahrenheit);
+
+        // Convert Fahrenheit to Celsius.
+        double celsius = (fahrenheit - 32) * 5 / 9;
+
+        return celsius;
+    }
+}
+
+class TestTemperatureConverter
+{
+    static void Main()
+    {
+        Console.WriteLine("Please select the convertor direction");
+        Console.WriteLine("1. From Celsius to Fahrenheit.");
+        Console.WriteLine("2. From Fahrenheit to Celsius.");
+        Console.Write(":");
+
+        string selection = Console.ReadLine();
+        double F, C = 0;
+
+        switch (selection)
+        {
+            case "1":
+                Console.Write("Please enter the Celsius temperature: ");
+                F = TemperatureConverter.CelsiusToFahrenheit(Console.ReadLine());
+                Console.WriteLine("Temperature in Fahrenheit: {0:F2}", F);
+                break;
+
+            case "2":
+                Console.Write("Please enter the Fahrenheit temperature: ");
+                C = TemperatureConverter.FahrenheitToCelsius(Console.ReadLine());
+                Console.WriteLine("Temperature in Celsius: {0:F2}", C);
+                break;
+
+            default:
+                Console.WriteLine("Please select a convertor.");
+                break;
+        }
+
+        // Keep the console window open in debug mode.
+        Console.WriteLine("Press any key to exit.");
+        Console.ReadKey();
+    }
+}
+/* Example Output:
+    Please select the convertor direction
+    1. From Celsius to Fahrenheit.
+    2. From Fahrenheit to Celsius.
+    :2
+    Please enter the Fahrenheit temperature: 20
+    Temperature in Celsius: -6.67
+    Press any key to exit.
+ */
+```
+
+#### 静态成员
+非静态类可以包含静态方法、字段、属性或事件。 即使未创建类的任何实例，也可对类调用静态成员。 静态成员始终按类名（而不是实例名称）进行访问。 静态成员只有一个副本存在（与创建的类的实例数有关）。 静态方法和属性无法在其包含类型中访问非静态字段和事件，它们无法访问任何对象的实例变量，除非在方法参数中显式传递它。    
+在首次访问静态成员之前以及在调用构造函数（如果有）之前，会初始化静态成员。 若要访问静态类成员，请使用类的名称（而不是变量名称）指定成员的位置  
+```C#
+public class Automobile
+{
+    public static int NumberOfWheels = 4;
+    public static int SizeOfGasTank
+    {
+        get
+        {
+            return 15;
+        }
+    }
+    public static void Drive() { }
+    public static event EventType RunOutOfGas;
+
+    // Other non-static fields and properties...
+}
+
+Automobile.Drive();
+int i = Automobile.NumberOfWheels;
+```
