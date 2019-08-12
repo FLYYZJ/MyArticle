@@ -88,7 +88,36 @@ value参数的内容是由level和optname决定的。level定义了哪个选项�
 
 ![](images/socketserver-3.png)
 
-  
+
+## python mixin概念
+
+```python
+class Displayer():
+    def display(self, message):
+        print(message)
+
+
+class LoggerMixin():
+    def log(self, message, filename='logfile.txt'):
+        with open(filename, 'a') as fh:
+            fh.write(message)
+
+    def display(self, message):
+        super().display(message)
+        self.log(message)
+
+
+class MySubClass(LoggerMixin, Displayer):
+    def log(self, message):
+        super().log(message, filename='subclasslog.txt')
+
+
+subclass = MySubClass()
+subclass.display("This string will be shown and logged in subclasslog.txt")
+```
+在多继承的环境下，super() 有相对来说更加复杂的含义。它会查看你的**继承链**，使用一种叫做 Methods Resolution Order（MRO，方法解析顺序） 的方式，来决定调用最近的继承父类的方法。  
+我们可以简单记住，self.method() 将会先在当前类中查看 method() 方法，如果没有，就在继承链中进行查找，**查找顺序就是你继承的顺序从左到右，直到 method() 方法被找到**。super().method() 与 self.method() 是差不多的，只是 super().method() 需要跳过当前类而已。  
+ LoggerMixin 类是无法单独使用的，它必须要和一个拥有 display() 函数定义的类一起混合使用。这也就是为什么它被称作是 Mixin 类的原因，它总是需要与其他类混合来加强其他类。
 
 
 # 源码解析
@@ -355,7 +384,7 @@ BaseServer中的_handle_request_noblock函数
 class ThreadingUDPServer(ThreadingMixIn, UDPServer): pass
 class ThreadingTCPServer(ThreadingMixIn, TCPServer): pass
 ```
-Python的Mixin可以视为其它语言中接口的概念
+关于[mixin的概念](https://blog.csdn.net/u012814856/article/details/81355935)的解释。
 ```python
 class ThreadingMixIn:
     """Mix-in class to handle each request in a new thread."""
@@ -402,3 +431,4 @@ class ThreadingMixIn:
                 for thread in threads:
                     thread.join()
 ```
+依据mixin的概念，ThreadingTCPServer(ThreadingMixIn, TCPServer)调用process_request时实质时调用了ThreadingMixIn的process_request方法。

@@ -569,3 +569,67 @@ public class Automobile
 Automobile.Drive();
 int i = Automobile.NumberOfWheels;
 ```
+
+## 枚举
+```C#
+enum Day { Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday };
+enum Month : byte { Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec };  // byte类型，用冒号指定其它类型
+
+Day today = Day.Monday;
+int dayNumber =(int)today;
+Console.WriteLine("{0} is day number #{1}.", today, dayNumber);
+
+Month thisMonth = Month.Dec;
+byte monthNumber = (byte)thisMonth;
+Console.WriteLine("{0} is month number #{1}.", thisMonth, monthNumber);
+
+// Output:
+// Monday is day number #1.
+// Dec is month number #11.
+
+Day meetingDay = Day.Monday;
+//...
+meetingDay = Day.Friday;  // 可进行枚举值的更改
+```
+作为位标志
+```C#
+[Flags]
+enum Days
+{
+    None      = 0b_0000_0000, // 0
+    Sunday    = 0b_0000_0001, // 1
+    Monday    = 0b_0000_0010, // 2
+    Tuesday   = 0b_0000_0100, // 4
+    Wednesday = 0b_0000_1000, // 8
+    Thursday  = 0b_0001_0000, // 16
+    Friday    = 0b_0010_0000, // 32
+    Saturday  = 0b_0100_0000  // 64 
+}
+class MyClass
+{
+    Days meetingDays = Days.Tuesday | Days.Thursday;
+}
+```
+若要在枚举上设置标志，请使用按位 OR 运算符，如以下示例所示
+```C#
+// Initialize with two flags using bitwise OR.
+meetingDays = Days.Tuesday | Days.Thursday;
+
+// Set an additional flag using bitwise OR.
+meetingDays = meetingDays | Days.Friday;
+
+Console.WriteLine($"Meeting days are {meetingDays}");
+// Output: Meeting days are Tuesday, Thursday, Friday
+
+// Toggle a flag using bitwise XOR.
+meetingDays = meetingDays ^ Days.Tuesday;
+Console.WriteLine($"Meeting days are {meetingDays}");
+// Output: Meeting days are Thursday, Friday
+```
+若要确定是否设置了特定标志，请使用按位 AND 运算
+```C#
+// Test value of flags using bitwise AND.
+bool test = (meetingDays & Days.Thursday) == Days.Thursday;
+Console.WriteLine($"Thursday {test == true ? "is" : "is not"} a meeting day.");
+// Output: Thursday is a meeting day.
+```
