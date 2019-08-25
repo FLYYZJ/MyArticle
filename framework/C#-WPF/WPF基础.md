@@ -322,9 +322,73 @@ private void Application_Startup(object sender, StartupEventArgs e)
 CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("de-DE");
 ```
 
+## 属性标签
+xaml文件被解析的时候，标签都会被定义为类实例，类实例会有自己的属性，我们可以在xaml文件中用类名（例如Button，Stackpanel等）加.加属性名进行赋值。
+```xml
+<Grid>
+    <Button Width="120" Height="30">
+        <Button.Content> <!-- 属性标签，Content作为Button这个类型的一个属性被赋值，适用于赋值较为复杂的结构 -->
+            <Rectangle Width="20" Height="20" />>
+        </Button.Content>
+    </Button>
+</Grid>
+```
+颜色渐变矩形
+```xml
+<Rectangle Width="20" Height="120" Stroke="Blue"> <!-- 用Blue类型的brush赋给Stroke -->
+    <Rectangle.Fill>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <LinearGradientBrush.GradientStops>
+                <GradientStop Offset="0.2" Color="LightBlue" />
+                <GradientStop Offset="0.7" Color="DarkBlue" />
+                <GradientStop Offset="1" Color="Blue" />
+            </LinearGradientBrush.GradientStops>
+
+        </LinearGradientBrush>
+    </Rectangle.Fill>
+</Rectangle>
+```
+
+## 标签拓展
+利用{}来获取资源，其中{}构成的语法就是标签拓展，表示从外部获取资源。
+```xml
+<Window.Resources>
+    <sys:String x:Key="stringHello">Hello WPF!</sys:String>
+</Window.Resources>
+<Grid>
+    <TextBlock Height="24" Width="120" Background="LightBlue" Text="{StaticReasource ReasourceKey=stringHello}" />
+    
+</Grid>
+```
+
+也可以基于数据绑定来完成类似的工作：
+```xml
+<Grid>
+    <TextBlock Height="24" Width="120" Background="LightBlue" Text="{Binding ElementName=sld, Path=Value}" /> 
+</Grid>
+```
+
 ## 依赖属性
 依赖属性出现的目的是用来实现WPF中的样式、自动绑定及实现动画等特性。应用场景为：
 - 依赖属性加入了属性变化通知、限制、验证等功能。这样可以使我们更方便地实现应用，同时大大减少了代码量。许多之前需要写很多代码才能实现的功能，在WPF中可以轻松实现。
 - 节约内存：在WinForm中，每个UI控件的属性都赋予了初始值，这样每个相同的控件在内存中都会保存一份初始值。而WPF依赖属性很好地解决了这个问题，它内部实现使用哈希表存储机制，对多个相同控件的相同属性的值都只保存一份。
 - 支持多种提供对象：可以通过多种方式来设置依赖属性的值。可以配合表达式、样式和绑定来对依赖属性设置值。
 
+## 事件处理器 和 代码后置
+![](../images/WPF-4.png)
+以点击按钮触发弹窗为例，事件的拥有者是Button控件，订阅者是窗体（window），处理方法是自定义的handler函数。  
+代码后置的含义是将事件订阅放到后台实现，在前台可以用 事件名="xxx" 这样的属性赋值方法实现，而在后台可以用 控件对象.事件名 += EventHandler这样的方式实现，其中EventHandler就是自定义的事件处理函数。
+
+## 名称空间 和 x名称空间
+将一些常用的模块做成单独的Library，然后在主控件中引入这些Library，从而实现代码复用和模块开发。注意在主工程中引用对应的类库才能使用（reference），用WPF USER ControlLibrary进行设计。 
+```xml
+<Window xmlns:control="clr-namespace:ControlLibrary;assembly=ControlLibrary" />
+<!-- 此处的ControlLibrary就是自定义的模块类,SalaryCalculator为定义在ControlLibrary这个文件中的一个xaml模块，下面 -->
+
+<control:SalaryCalculator ... ></control>
+```
+![](../images/WPF-5.png)
+
+### x名称空间
+xmlns:x="http://scheme.microsoft.com/winfx/2006/xaml"  
+xaml命名空间用于解析xaml文件。
