@@ -86,6 +86,7 @@ _CookiePattern = re.compile(r"""
     """, re.ASCII | re.VERBOSE)    # re.ASCII may be removed if safe.
 ```
 
+首先还是符合模块化的思想，将复杂的模块分块。作者先设计了Morsel模块，该模块主要存放单一的键值对，因为每个cookie出了键值对之外，还存在这样几个特殊的属性，例如域（domain）、版本（version），max-age（保存时间）等。Morsel模块继承自字典，其中就保留cookie的键值以及其它特殊的属性。
 
 
 

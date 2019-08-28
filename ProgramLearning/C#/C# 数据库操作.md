@@ -1,0 +1,12 @@
+# SQLITE
+
+
+
+
+
+# MYSQL
+
+
+
+
+# PGSQL
