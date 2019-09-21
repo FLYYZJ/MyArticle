@@ -86,7 +86,87 @@ _CookiePattern = re.compile(r"""
     """, re.ASCII | re.VERBOSE)    # re.ASCII may be removed if safe.
 ```
 
-首先还是符合模块化的思想，将复杂的模块分块。作者先设计了Morsel模块，该模块主要存放单一的键值对，因为每个cookie出了键值对之外，还存在这样几个特殊的属性，例如域（domain）、版本（version），max-age（保存时间）等。Morsel模块继承自字典，其中就保留cookie的键值以及其它特殊的属性。
+首先还是符合模块化的思想，将复杂的模块分块。作者先设计了Morsel模块，该模块主要存放单一的键值对，因为每个cookie出了键值对之外，还存在这样几个特殊的属性，例如域（domain）、版本（version），max-age（保存时间）等。Morsel模块继承自字典，其中就保留cookie的键值以及其它特殊的属性。Morsel类型自身带有key和value两个字段，用于保存键值，而使用dict的赋值方式，即d\[k]\=v 这样赋值时，是进行cookie的属性赋值。  
+```python
+# 属性赋值
+def __setitem__(self, K, V):  # 这种形式对应在 d[k] = v 这种赋值形式时调用，这种赋值方式用于设置cookie的attribute
+    K = K.lower()  # 全部转换为小写形式
+    if not K in self._reserved:  # 不是cookie的保留字，则报错
+        raise CookieError("Invalid attribute %r" % (K,))
+    dict.__setitem__(self, K, V)
+# 键值对赋值
+def set(self, key, val, coded_val):
+    if key.lower() in self._reserved:  # 必须是非保留字
+        raise CookieError('Attempt to set a reserved key %r' % (key,))
+    if not _is_legal_key(key):  # 非法字符
+        raise CookieError('Illegal key %r' % (key,))
 
+    # It's a good key, so save it.
+    self._key = key
+    self._value = val
+    self._coded_value = coded_val
+```
+BaseCookie可以作为通用解析Cookie字符串的类，其它特殊的解析形式可以通过继承BaseCookie类，覆写方法进行修改。  
+BaseCookie继承自dict，自身带的元素是cookie-key:cookie-value，而每个cookie-value都是Morsel类型，可以携带key-value之外，也携带对应的key-attribute（即该cookie的属性），下面这段代码体现了对cookie字符串的解析，用上述的正则表达式模式进行匹配，且必须先获得键值信息，后续才能记录该键值对的属性信息，否则属于非法cookie。
+```python
+    def __parse_string(self, str, patt=_CookiePattern):
+        i = 0                 # Our starting point
+        n = len(str)          # Length of string
+        parsed_items = []     # Parsed (type, key, value) triples
+        morsel_seen = False   # A key=value pair was previously encountered  已经找到了key=value这个对，必须先找到这个键值对，才能添加属性信息
 
+        TYPE_ATTRIBUTE = 1
+        TYPE_KEYVALUE = 2
+
+        # We first parse the whole cookie string and reject it if it's
+        # syntactically invalid (this helps avoid some classes of injection
+        # attacks). 必须先找到key-value对，而且属性部分是带在这个key-value对后面的
+        while 0 <= i < n:  # 总共识别的长度不可以大于实际的cookie字符串长度
+            # Start looking for a cookie
+            match = patt.match(str, i)
+            if not match:
+                # No more cookies
+                break
+
+            key, value = match.group("key"), match.group("val")
+            i = match.end(0)
+
+            if key[0] == "$":
+                if not morsel_seen:
+                    # We ignore attributes which pertain to the cookie
+                    # mechanism as a whole, such as "$Version".  $开头的cookie键值对主要表示整体的cookie属性，不需要考虑其中
+                    # See RFC 2965. (Does anyone care?)
+                    continue
+                parsed_items.append((TYPE_ATTRIBUTE, key[1:], value))
+            elif key.lower() in Morsel._reserved:
+                if not morsel_seen:
+                    # Invalid cookie string
+                    return
+                if value is None:
+                    if key.lower() in Morsel._flags:
+                        parsed_items.append((TYPE_ATTRIBUTE, key, True))  # httponly 和 secure 属性
+                    else:
+                        # Invalid cookie string
+                        return
+                else:
+                    parsed_items.append((TYPE_ATTRIBUTE, key, _unquote(value)))
+            elif value is not None:
+                parsed_items.append((TYPE_KEYVALUE, key, self.value_decode(value)))
+                morsel_seen = True
+            else:
+                # Invalid cookie string
+                return
+
+        # The cookie string is valid, apply it.
+        M = None         # current morsel
+        for tp, key, value in parsed_items:
+            if tp == TYPE_ATTRIBUTE:
+                assert M is not None
+                M[key] = value
+            else:
+                assert tp == TYPE_KEYVALUE  # TYPE_KEYVALUE是先找到的，然后才轮到TYPE_ATTRIBUTE
+                rval, cval = value
+                self.__set(key, rval, cval)
+                M = self[key]
+```
 
