@@ -254,3 +254,66 @@ foreach (Int32 i in CountWithTimeLimit(stop))
 ```
 
 [迭代器详解](https://www.cnblogs.com/yangecnu/archive/2012/03/17/2402432.html)
+
+## 泛型接口中的协变和抗变
+https://segmentfault.com/a/1190000007005115
+
+C# 中对于对象（即对象引用），仅存在一种隐式类型转换，即 子类型的对象引用到父类型的对象引用的转换。这里的变化指的就是这种 子->父 的类型转换。
+```c#
+object o = "hello";
+```
+以下实例
+```c#
+string s = "abc";
+object o = Method(s);
+```
+其实质是发生了如下两次转换
+1. string Method(object o) 可变换为 string Method(string o)
+2. string Method(string o) 可变换为 object Method(string o)
+
+函数的 输入类型（函数参数） 可由 object 变换为 string，父->子
+在函数输出时，函数的 输出类型（返回值） 可由string变换为object，子->父
+
+#### 接口仅用于输出（返回值）的情况，协变
+```c#
+interface IDemo<out T>
+{
+    //仅将类型 T 用于输出
+    T Method(object value);
+}
+
+public class Demo : IDemo<string>
+{
+    //实现接口
+    public string Method (object value)
+    {
+        //别忘了类型转换！
+        return value.ToString();
+    }
+}    
+.....
+// 可将 string Method (object value) 转换为 object Method (object value)
+IDemo<string> demoStr = new Demo();
+IDemo<object> demoObj = demoStr;
+```
+#### 接口仅用于输入（函数参数）的情况，逆变
+```c#
+interface IDemo<in T>
+{
+    //仅将类型 T 用于输入
+    string Method(T value);
+}
+
+public class Demo : IDemo<object>
+{
+    //实现接口
+    public string Method (object value)
+    {
+        return value.ToString();
+    }
+}    
+......
+// 可将 IDemo<object> 类型转换为 IDemo<string> 类型
+IDemo<object> demoObj = new Demo();
+IDemo<string> demoStr = demoObj;
+```
