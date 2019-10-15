@@ -68,7 +68,11 @@ If timeout > 0, this specifies the maximum wait time, in seconds. If timeout <= 
 
 This returns a list of (key, events) tuples, one for each ready file object. 返回值是一个(key,event)的tuple 列表，保存已经准备好的文件对象
 
-key is the SelectorKey instance corresponding to a ready file object. events is a bitmask of events ready on this file object.
+key is the SelectorKey instance corresponding to a ready file object. events is a bitmask of events ready on this file object. key表示的是注册到队列中的已准备好的对象，而events则是一个bit串表示被触发的事件。
+
+参考：
+- https://www.cnblogs.com/huchong/p/8613308.html
+- https://www.cnblogs.com/suke99/p/5333552.html
 
 ## threading模块（event部分）
 
@@ -128,7 +132,7 @@ subclass.display("This string will be shown and logged in subclasslog.txt")
   
 整个代码的框架大致如下：socket_server中包含了几个Server的定义，以及Handler 还有 Mixin。
 
-一般我们使用定义对应的Handler，然后选择合适的Server并对Server加入合适的Mixin来实现多线程并发Socket服务。
+一般我们使用对应的Handler，然后选择合适的Server并对Server加入合适的Mixin来实现多线程并发Socket服务。
 ```
 +------------+
 | BaseServer |
@@ -233,7 +237,7 @@ class TCPServer(BaseServer):
 
     request_queue_size = 5  # listen函数后的数量，表示同时处理5个请求
 
-    allow_reuse_address = False  # 重用标志，默认不立刻关闭当前的连接
+    allow_reuse_address = False  # 重用标志，默认False表示不立刻关闭当前的连接
 
     def __init__(self, server_address, RequestHandlerClass, bind_and_activate=True):
         """Constructor.  May be extended, do not override."""
@@ -337,13 +341,13 @@ BaseServer中的_handle_request_noblock函数
         else:
             self.shutdown_request(request)
 ```
-此处调用了process_request方法，其实质是调用如下函数
+此处调用了process_request方法，其实质是调用如下函数（这里的request其实质就是客户端的socket句柄）
 ```python
     def finish_request(self, request, client_address):
         """Finish one request by instantiating RequestHandlerClass."""
         self.RequestHandlerClass(request, client_address, self)  # 调用了Handle类进行处理
 ```
-所以具体怎么用，就是取到数据后怎么使用，就是有用户自定义的RequestHandler决定。回顾上面的一般用法中的MyServerHandler类，其中定义的Handle方法，其中有data = self.request.recv(1024)，明显可以看出这个request就是client,addr = sock.accpet()中的client，和普通socket的用法是一致的。
+所以具体怎么用，就是取到数据后怎么使用，这是由用户自定义的RequestHandler决定。回顾上面的一般用法中的MyServerHandler类，其中定义的Handle方法，其中有data = self.request.recv(1024)，明显可以看出这个request就是client,addr = sock.accpet()中的client，和普通socket的用法是一致的。
 
 比较重要的一点是当多个server同时开启时，怎么一一处理这些server的请求，这个就是利用了selector模块，socketserver模块定义了全局的_ServerSelector，所有的server都会注册到这个队列中，每隔poll_interval会去扫描这些server，如果有server被客户端连接，就会被取出来，并逐个进行客户端请求处理。
 
@@ -431,4 +435,80 @@ class ThreadingMixIn:
                 for thread in threads:
                     thread.join()
 ```
-依据mixin的概念，ThreadingTCPServer(ThreadingMixIn, TCPServer)调用process_request时实质时调用了ThreadingMixIn的process_request方法。
+依据mixin的概念，ThreadingTCPServer(ThreadingMixIn, TCPServer)调用process_request时实质时调用了ThreadingMixIn的process_request方法。此时当有新的请求到来时，就会启用新的线程去处理请求，而关于Selector的轮询则会继续进行，进而保证了同时处理多个请求的功能。
+
+###  流处理handler示例
+```python
+class StreamRequestHandler(BaseRequestHandler):
+
+    """Define self.rfile and self.wfile for stream sockets."""
+
+    # Default buffer sizes for rfile, wfile.
+    # We default rfile to buffered because otherwise it could be
+    # really slow for large data (a getc() call per byte); we make
+    # wfile unbuffered because (a) often after a write() we want to
+    # read and we need to flush the line; (b) big writes to unbuffered
+    # files are typically optimized by stdio even when big reads
+    # aren't.
+
+    # -1 表示使用缓冲，而0表示不进行缓冲。读缓冲因为有时候要读大数据，可以允许边读边处理以提高效率，而写不缓冲因为我们发送数据后很大可能要进行监听，此时我们直接把大包的数据发出即可，无需进行缓冲。
+    rbufsize = -1
+    wbufsize = 0
+
+    # A timeout to apply to the request socket, if not None.
+    timeout = None
+
+    # Disable nagle algorithm for this socket, if True.
+    # Use only when wbufsize != 0, to avoid small packets.
+    # https://blog.csdn.net/dog250/article/details/21303679 nagle算法
+    # Nagle算法的主旨在于“避免发送‘大量’的小包”。
+    disable_nagle_algorithm = False
+
+    def setup(self):
+        self.connection = self.request  # socket连接，就是自定义的服务端socket连接
+        if self.timeout is not None:
+            self.connection.settimeout(self.timeout)
+        if self.disable_nagle_algorithm:
+            self.connection.setsockopt(socket.IPPROTO_TCP,
+                                       socket.TCP_NODELAY, True)  # 有数据立即发送，无论大小包
+        self.rfile = self.connection.makefile('rb', self.rbufsize)  # 读入流
+        # 使用makefile返回一个套接字相关联的文件对象，对该文件对象的操作方法，与普通文件操作方法一致，read,readline,write,writeline
+        # makefile不仅仅可以对accept建立连接后的socketObject使用，也可对主线程的sock和任何socketObject使用
+        if self.wbufsize == 0:  # 没有设置缓冲区
+            self.wfile = _SocketWriter(self.connection)
+        else:
+            self.wfile = self.connection.makefile('wb', self.wbufsize)  # 写入流，限定了缓冲区大小，如果超过缓冲区大小的内容将被舍弃
+
+    def finish(self):
+        if not self.wfile.closed:
+            try:
+                self.wfile.flush()
+            except socket.error:
+                # A final socket error may have occurred here, such as
+                # the local error ECONNABORTED.
+                pass
+        self.wfile.close()
+        self.rfile.close()
+
+
+class _SocketWriter(BufferedIOBase):
+    """Simple writable BufferedIOBase implementation for a socket
+    无缓冲socket写入流， 不带有buffer，不需要flush
+    Does not hold data in a buffer, avoiding any need to call flush()."""
+
+    def __init__(self, sock):
+        self._sock = sock
+
+    def writable(self):  # 可写流对象必须实现
+        return True
+
+    def write(self, b):
+        self._sock.sendall(b)  # socket发送数据，因为无缓存，所以一次性将数据全部推出
+        with memoryview(b) as view:
+            return view.nbytes
+
+    def fileno(self):  # 文件对象必须实现
+        return self._sock.fileno()
+
+```
+

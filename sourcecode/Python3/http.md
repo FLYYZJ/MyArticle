@@ -170,3 +170,27 @@ BaseCookie继承自dict，自身带的元素是cookie-key:cookie-value，而每�
                 M = self[key]
 ```
 
+# http模块详解
+```python
+class HTTPServer(socketserver.TCPServer):
+
+    allow_reuse_address = 1    # Seems to make sense in testing environment
+
+    def server_bind(self):
+        """Override server_bind to store the server name."""
+        socketserver.TCPServer.server_bind(self)
+        host, port = self.server_address[:2]
+        self.server_name = socket.getfqdn(host)
+        self.server_port = port
+```
+简单版的HttpServer继承自socketserver的TCPServer模块，这是一个单线程模式的HTTP服务器
+
+```python
+class ThreadingHTTPServer(socketserver.ThreadingMixIn, HTTPServer):
+    daemon_threads = True
+```
+多线程版本也比较简单，在继承原始单线程的HTTP服务器的基础上加入socketserver.ThreadingMixIn来提供多线程支持。
+
+这里比较重要的是如何处理HTTP请求，数据的接收是由socket或多线程socket实现的，这一块依赖于socketserver，也就是上面两个代码块实现的效果。而socketserver的运用主要是依赖于handler，即处理函数的实现。
+
+这里继承了socketserver中定义的StreamRequestHandler处理方法
