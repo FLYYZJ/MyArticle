@@ -1,4 +1,5 @@
 # string 转 wstring， char * 转 wchar*（string.c_str() = char *, w_string.c_str() = w_char*）
+短字节转宽字节方法。  
 方法1
 ```C++
 #include <string>
@@ -30,16 +31,16 @@ std::string WstringToString(const std::wstring str)
 
 int main()
 {
-    std::string str = "我是SunboyL。";
+    std::string str = "我是YZJ";
     std::wstring str1 = StringToWstring(str);// string转换为wstring
     
-    str1 = L"我是不是SunboyL。";
+    str1 = L"我是不是YZJ";
     str = WstringToString(str1);// wstring转换为string
     return 0;
 }
 ```
 方法2，使用内置的转换函数 MultiByteToWideChar   
-https://docs.microsoft.com/zh-cn/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar?redirectedfrom=MSDN  
+https://docs.microsoft.com/zh-cn/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar?redirectedfrom=MSDN  —— 里面主要介绍了icode的几种类型，根据icode类型进行转码
 ```C++
 CStringW buf2StrW(const char*pbuf  ,int icode)
 {
@@ -55,3 +56,42 @@ CStringW buf2StrW(const char*pbuf  ,int icode)
 ```
 
 
+## 编码转换
+
+UTF-8 转 GBK
+```c++
+string UTF8ToGBK(const char* strUTF8)
+{
+    int len = MultiByteToWideChar(CP_UTF8, 0, strUTF8, -1, NULL, 0);
+    wchar_t* wszGBK = new wchar_t[len+1];
+    memset(wszGBK, 0, len*2+2);
+    MultiByteToWideChar(CP_UTF8, 0, strUTF8, -1, wszGBK, len);
+    len = WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, NULL, 0, NULL, NULL);
+    char* szGBK = new char[len+1];
+    memset(szGBK, 0, len+1);
+    WideCharToMultiByte(CP_ACP, 0, wszGBK, -1, szGBK, len, NULL, NULL);
+    string strTemp(szGBK);
+    if(wszGBK) delete[] wszGBK;
+    if(szGBK) delete[] szGBK;
+    return strTemp;
+}
+
+```
+GBK 转 UTF-8
+```C++
+string GBKToUTF8(const char* strGBK)
+{
+    int len = MultiByteToWideChar(CP_ACP, 0, strGBK, -1, NULL, 0);
+    wchar_t* wstr = new wchar_t[len+1];
+    memset(wstr, 0, len+1);
+    MultiByteToWideChar(CP_ACP, 0, strGBK, -1, wstr, len);
+    len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+    char* str = new char[len+1];
+    memset(str, 0, len+1);
+    WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
+    string strTemp = str;
+    if(wstr) delete[] wstr;
+    if(str) delete[] str;
+    return strTemp;
+}
+```

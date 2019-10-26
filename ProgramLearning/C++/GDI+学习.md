@@ -8,7 +8,9 @@ CWnd *pWin = GetDlgItem(IDC_STATIC);//获取该控件的指针，就可以对该
 CDC *pDc = pWin->GetDC();//获取该控件的画布
 HDC hdc = pDc->GetSafeHdc(); // 获取HDC
 ...
+// 该graphics就可以对hdc内容进行编辑
 Gdiplus::Graphics graphics(hdc);
+// 
 ```
 
 
@@ -28,4 +30,82 @@ GdiplusStartup(&m_gdiplusToken, &gdiplusStartupInput, NULL);
 CWinApp::InitInstance();
 // ExitInstance()函数
 GdiplusShutdown(m_gdiplusToken);  // 关掉GDI+资源
+
+
+```
+
+### GDI+ 保存bitmap
+参考： http://www.voidcn.com/article/p-sclqskcb-pp.html
+```C++
+// 转码
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+{
+  UINT  num = 0;          // number of image encoders
+  UINT  size = 0;         // size of the image encoder array in bytes
+
+  ImageCodecInfo* pImageCodecInfo = NULL;
+
+  Gdiplus::GetImageEncodersSize(&num, &size);
+  if(size == 0)
+    return -1;  // Failure
+
+  pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+  if(pImageCodecInfo == NULL)
+    return -1;  // Failure
+
+  Gdiplus::GetImageEncoders(num, size, pImageCodecInfo);
+
+  for(UINT j = 0; j < num; ++j)
+  {
+    if( wcscmp(pImageCodecInfo[j].MimeType, format) == 0 )
+    {
+      *pClsid = pImageCodecInfo[j].Clsid;
+      free(pImageCodecInfo);
+      return j;  // Success
+    }    
+  }
+
+  free(pImageCodecInfo);
+  return -1;  // Failure
+}
+// 保存图片
+BOOL SaveHDCToFile(HDC hDC, LPRECT lpRect)
+{   
+  BOOL bRet = FALSE;
+  int nWidth = lpRect->right - lpRect->left;
+  int nHeight = lpRect->bottom - lpRect->top;
+
+  //将目标区域贴图到内存BITMAP
+  // CreateCompatibleDC 创建一个兼容hDC的DC
+  HDC memDC = CreateCompatibleDC(hDC); 
+  // CreateCompatibleBitmap
+  HBITMAP hBmp = CreateCompatibleBitmap(hDC, nWidth, nHeight);
+  // 将一个对象选择到指定的设备上下文（DC）中，且hBmp会替换掉memDC中的对象
+  SelectObject(memDC, hBmp);
+  // bitblt函数的首个参数是要转换后的目标hdc，而后续的hdc参数是转换前的hdc，其它参数代表目标hdc的左上角坐标和长宽（代表矩形）
+  // 最后一个参数是背景色选择，可以选WHITNESS和BLACKNESS，这里是渐变色
+  BitBlt(memDC, lpRect->left, lpRect->top, nWidth, nHeight,
+    hDC, 0, 0, SRCCOPY);
+
+  //保存成文件
+  {
+    //L"image/bmp" L"image/jpeg"  L"image/gif" L"image/tiff" L"image/png"
+    CLSID pngClsid;
+    GetEncoderClsid(L"image/bmp", &pngClsid);//此处以BMP为例，其它格式选择对应的类型，如JPG用L"image/jpeg" 
+
+    Gdiplus::Bitmap *pbmSrc = Gdiplus::Bitmap::FromHBITMAP(hBmp, NULL);
+    if( pbmSrc->Save(L"C:\\test.bmp", &pngClsid) == Ok)
+    {
+      bRet = TRUE;
+    }
+    delete pbmSrc;
+  }
+
+  //清理工作
+  SelectObject(memDC, (HBITMAP)NULL);
+  DeleteDC(memDC);  
+  DeleteObject(hBmp);
+
+  return bRet;
+}
 ```
