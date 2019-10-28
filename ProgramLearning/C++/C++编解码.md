@@ -40,7 +40,8 @@ int main()
 }
 ```
 方法2，使用内置的转换函数 MultiByteToWideChar   
-https://docs.microsoft.com/zh-cn/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar?redirectedfrom=MSDN  —— 里面主要介绍了icode的几种类型，根据icode类型进行转码
+https://docs.microsoft.com/zh-cn/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar?redirectedfrom=MSDN  —— 里面主要介绍了icode的几种类型，根据icode类型进行转码  
+常用的转码类型是CP_ACP，这个转码类型表示使用系统默认的编码格式对字符串进行转码，如中文系统会被转码为GBK格式
 ```C++
 CStringW buf2StrW(const char*pbuf  ,int icode)
 {
