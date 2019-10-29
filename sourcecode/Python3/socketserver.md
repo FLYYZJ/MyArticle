@@ -90,7 +90,7 @@ key is the SelectorKey instance corresponding to a ready file object. events is 
 #### 2、setsockopt(level,optname,value) 和 getsockopt(level,optname,buflen)
 value参数的内容是由level和optname决定的。level定义了哪个选项将被使用。通常情况下是SOL_SOCKET。意思是正在使用socket选项。还可以通过设置一个特殊协议号码来设置协议选项。SOL_SOCKET的常用选项如下
 
-![](images/socketserver-3.png)
+![](/assets/socketserver-3.png)
 
 
 ## python mixin概念
@@ -125,8 +125,8 @@ subclass.display("This string will be shown and logged in subclasslog.txt")
 
 
 # 源码解析
-![](images/socketserver-1.png)
-![](images/socketserver-2.png)
+![](/assets/socketserver-1.png)
+![](/assets/socketserver-2.png)
 
 
   

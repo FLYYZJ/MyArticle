@@ -255,7 +255,7 @@ foreach (Int32 i in CountWithTimeLimit(stop))
 
 [迭代器详解](https://www.cnblogs.com/yangecnu/archive/2012/03/17/2402432.html)
 
-## 泛型接口中的协变和抗变
+## 泛型接口中的协变和抗变（在本文档的委托部分也有关于协变和抗变的解析）
 https://segmentfault.com/a/1190000007005115
 
 C# 中对于对象（即对象引用），仅存在一种隐式类型转换，即 子类型的对象引用到父类型的对象引用的转换。这里的变化指的就是这种 子->父 的类型转换。

@@ -79,13 +79,13 @@ const_cast<type>(expression)
 }
 ```
 "a":123会成为一个节点，其prev值为null，next为b，child为null，而valuetype为int，同时value值为123。一开始cJson会构建一个root节点，该root节点就是最外层的{}对应的节点，此后以该root节点不断进行拓展，拓展成树结构。child节点是一个链表，会不断扩充。其架构图如下所示：  
-![](images/cjson-4.png)
+![](/assets/cjson-4.png)
 
 ### 1、将一些常用操作（同一模式下的操作，例如内存管理等）封装到结构体中
 如下所示，定义一个内部调用的hooks结构体，结构体中保存了3个关于内存分配（分配内存，释放内存，重新分配内存）的方法，allocate，deallocate和reallocate。同时针对不同的操作系统环境，分配内存的方式不一样。这3个钩子函数会对应到实际的内部内存分配函数上。而后续调用这个函数基本使用全局的结构体进行调用。
-![内存分配钩子函数结构体](images/cjson-1.png)
-![实际内存分配函数](images/cjson-2.png)
-![利用一个全局的global_hooks来得到这些分配内存的功能](images/cjson-3.png)
+![内存分配钩子函数结构体](/assets/cjson-1.png)
+![实际内存分配函数](/assets/cjson-2.png)
+![利用一个全局的global_hooks来得到这些分配内存的功能](/assets/cjson-3.png)
 
 ### (CJSON *) cJSON_CreateObject(void) 函数
 构造一个json对象，其实质是一个调用cJSON_New_Item(&global_hooks)调用全局分配内存的结构体进行json-item的内存分配工作。cJSON_CreateObject的实质是构建一个object对象。后续还有cJSON_CreateString，cJSON_CreateNumber，cJSON_CreateTrue等函数，这些函数都是返回一个Cjson-item结构体，并指定对应的type（数值，字符串，object等）   

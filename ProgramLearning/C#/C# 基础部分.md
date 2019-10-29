@@ -372,7 +372,7 @@ struct TwoDPoint : IEquatable<TwoDPoint>
 - 它支持继承原则。 类型可以派生自其他类型（称为基类型）。 派生类型继承（有一些限制，公有私有限制）基类型的方法、属性和其他成员。 基类型可以继而从某种其他类型派生，在这种情况下，派生类型继承其继承层次结构中的两种基类型的成员。 
 - 所有类型（包括 System.Int32C# 关键字：int等内置数值类型）最终都派生自单个基类型，即 System.Object（C# 关键字：object。 这样的统一类型层次结构称为通用类型系统 (CTS)。
 - CTS 中的每种类型被定义为**值类型或引用类型**。 这包括 .NET 类库中的所有自定义类型以及你自己的用户定义类型。 使用 struct 关键字定义的类型是值类型；所有内置数值类型都是 structs。 使用 class 关键字定义的类型是引用类型。 引用类型和值类型遵循不同的编译时规则和运行时行为。
-![](images/reference&value-1.png)
+![](/assets/reference&value-1.png)
 
 
 ### 2、值类型
@@ -658,10 +658,10 @@ Console.WriteLine("Sum: " + sum);
 // Sum: 30
 ```
 int i = 123;  到  object o = i; 这个过程是将i的值拷贝一份后放入o中。  
-![](images/reference&value-2.png)
+![](/assets/reference&value-2.png)
 
 取消装箱的操作为：检查对象实例，以确保它是给定值类型的装箱值。然后将该值从实例复制到值类型变量中。  
-![](images/reference&value-3.png)
+![](/assets/reference&value-3.png)
 
 无效装箱拆箱会引发InvalidCastException 和 NullReferenceException（尝试拆null）
 ```C#

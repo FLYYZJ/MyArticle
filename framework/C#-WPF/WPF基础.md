@@ -14,7 +14,7 @@ WPF除了可以使用传统的Windows Installer以及ClickOnce方式来发布我
 # 工程架构
 
 ### 工程目录结构
-![](../images/WPF-1.png)
+![](/assets/WPF-1.png)
 
 ### 分离架构思想  
 WPF与WinForm一样有一个 Application对象来进行一些全局的行为和操作，并且每个 Domain （应用程序域）中仅且只有一个 Application 实例存在。和 WinForm 不同的是WPF Application默认由两部分组成 : App.xaml 和 App.xaml.cs，这有点类似于 Asp.Net WebForm，将定义和行为代码相分离。
@@ -27,7 +27,7 @@ WPF与WinForm一样有一个 Application对象来进行一些全局的行为和�
 - 跟踪和管理导航。 
 
 #### App.xml文件结构（Application定义所在文件）  
-![](../images/WPF-2.png)
+![](/assets/WPF-2.png)
 
 #### Application标签的属性
 1、应用程序关闭：可指定Application的ShutdownMode属性设置（应用到标签中，和html中设置属性的方式是一样的）
@@ -57,7 +57,7 @@ WPF与WinForm一样有一个 Application对象来进行一些全局的行为和�
 
 ### WPF应用程序的生命周期
 窗口在生命周期内的主体事件的顺序  
-![](../images/WPF-3.png)
+![](/assets/WPF-3.png)
 
 ### WPF事件 —— 路由事件
 路由事件是具有更强传播能力的事件——它可以在元素树上向上冒泡和向下隧道传播，并且沿着传播路径被事件处理程序处理。与依赖属性一样，可以使用传统的事件方式使用路由事件。尽管路由事件的使用方式与传统的事件一样，但是理解其工作原理还是相当重要的。WPF事件的特点是事件可以被传递。
@@ -375,7 +375,7 @@ xaml文件被解析的时候，标签都会被定义为类实例，类实例会�
 - 支持多种提供对象：可以通过多种方式来设置依赖属性的值。可以配合表达式、样式和绑定来对依赖属性设置值。
 
 ## 事件处理器 和 代码后置
-![](../images/WPF-4.png)
+![](/assets/WPF-4.png)
 以点击按钮触发弹窗为例，事件的拥有者是Button控件，订阅者是窗体（window），处理方法是自定义的handler函数。  
 代码后置的含义是将事件订阅放到后台实现，在前台可以用 事件名="xxx" 这样的属性赋值方法实现，而在后台可以用 控件对象.事件名 += EventHandler这样的方式实现，其中EventHandler就是自定义的事件处理函数。
 
@@ -387,7 +387,7 @@ xaml文件被解析的时候，标签都会被定义为类实例，类实例会�
 
 <control:SalaryCalculator ... ></control>
 ```
-![](../images/WPF-5.png)
+![](/assets/WPF-5.png)
 
 ### x名称空间
 xmlns:x="http://scheme.microsoft.com/winfx/2006/xaml"  
