@@ -5,9 +5,15 @@
 一个函数由这么几部分组成，函数名、参数个数、参数类型、返回值，函数签名由参数个数与其类型组成。
 ```
 委托是包含相同前面和返回值类型的方法列表（包含单个方法的委托和C++的函数指针相似）。委托在我的个人理解里面就像是某种函数模板，可以用委托变量来代表同样签名的函数，从而可以将该类型的函数作为函数的参数或者作为函数的返回值使用。  
-![](/assets/delegate-1.png)
+![](/assets/delegate-1.png)  
+
+委托的本质是类，可以嵌套在类中，也可以在全局定义。  
+委托对象实际是包装器，包装了一个方法和该方法要操作的对象。
 
 ## 2、委托声明和创建
+
+委托可以回调实例方法，也可以回调类静态方法。
+
 ```C# 
 delegate void MyDel(int x); // 无返回值，带int参数
 ```
@@ -84,6 +90,17 @@ delVar -= X.Act;
 ```
 ![](/assets/delegate-5.png)
 
+### 获得多播委托中每个委托的返回值 —— GetInvocationList方法
+GetInvocationList方法返回的是数组，数组中的每个引用都指向链中的委托对象。
+
+```C#
+Delegate[] arrayofDelegates = status.GetInvocationList();  // status是一个多播委托
+foreach(var getStatus in arrayofDelegates){  // 遍历其中的每个委托
+    getStatus(...);
+    ....
+}
+```
+
 ## 4、委托调用
 下述例子中委托的调用列表中的3个方法会被按顺序调用，因为中间值一般是得不到的，如果加入调用列表中的函数有返回值，在调用委托后只能得到调用列表中最后一个函数的返回值。如果想要获得每个函数的返回值，则需要使用逐项遍历调用列表中方法的方式获取。
 ```C#
@@ -119,7 +136,16 @@ OtherDel del = delegate(int x) {
 
 
 ## 委托的协变和抗变（CLR via C#）
-![delegate-7](/assets/delegate-7.png)
+![delegate-7](/assets/delegate-7.png)  
+只有引用类型才支持协变和逆变，值类型或void并不支持。
+
+## 系统自定义泛型委托
+Func（带返回值，0-17个参数） 和 Action（无返回值，0-17个参数）  
+当参数中带ref或out，则需要自定义委托，不能用系统给的委托。
+
+## lambda表达式注意事项
+![lambda-1](/assert/lambda-1.png)
+![lambda-2](/assert/lambda-2.png)
 
 
 # 事件

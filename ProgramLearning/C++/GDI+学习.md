@@ -12,6 +12,8 @@ HDC hdc = pDc->GetSafeHdc(); // 获取HDC
 Gdiplus::Graphics graphics(hdc);
 // 
 ```
+GDI+的graphices对象出了从HDC构造，还可以从其他的“设备”句柄上构造，例如可以直接将绘图这部分操作绘制到打印机设备上，然后让打印机进行打印。也即GDI+的输出设备可以是打印机，传真机，图片，窗口，控件等。
+![](/assets/gdiplus_1.png)
 
 
 ## 加载GDI+动态库和释放
