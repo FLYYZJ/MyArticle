@@ -282,7 +282,8 @@ commit; => 将内存中构建的临时表导入正式表中
 > 单列索引：一个索引只包含单个列
 > 组合索引：一个索引包含多个列
 
-[mysql中的索引分析](https://www.cnblogs.com/whgk/p/6179612.html)
+[mysql中的索引分析](https://www.cnblogs.com/whgk/p/6179612.html)  
+[mysql索引原理简介](https://blog.csdn.net/tongdanping/article/details/79878302)
 
 显示/创建/删除索引
 ```sql
@@ -298,3 +299,5 @@ drop index [indexname] on tbname;
 [sql语句的执行顺序](https://blog.csdn.net/u014044812/article/details/51004754)
 
 [mysql优化经验1](https://www.cnblogs.com/200911/p/5869123.html)
+
+[mysql索引原理简介](https://blog.csdn.net/tongdanping/article/details/79878302)

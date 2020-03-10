@@ -9,7 +9,7 @@
 一般flask的路由会设置为带斜杆的URL，针对带斜杆的URL，不会进行重定向，而针对不带斜杆的URL，会进行重定向到带斜杆的URL。
 
 重定向原理示意图
-![重定向原理](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/%E9%87%8D%E5%AE%9A%E5%90%91%E5%8E%9F%E7%90%86.png)
+![重定向原理](../../assets/%E9%87%8D%E5%AE%9A%E5%90%91%E5%8E%9F%E7%90%86.png)
 
 
 ### flask其它路由注册方法
@@ -68,8 +68,8 @@ def function(q,page):
 
 ### flask 路由深入理解
 flask在url和视图函数中间加入endpoint概念，为实现反向路由提供方便。
-flask的url要顺利访问到视图函数，需要urlmap对象和viewfunctions对象中分别存有url和对应的视图函数，这样才能实现索引。
-![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20181015171931.png)
+flask的url要顺利访问到视图函数，需要urlmap对象和viewfunctions对象中分别存有url和对应的视图函数，这样才能实现索引。  
+![](../../assets/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20181015171931.png)
 
 url参数传递，对于不是使用?param1=val1&param2=val2这种形式，可以直接放入装饰器的参数列表中，如下
 ```python
@@ -113,7 +113,7 @@ def search_args():
 
 ### 蓝图 blueprint
 蓝图是夹在app和视图函数之间的一层，可以解决flask中视图函数分文件的问题
-![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181015175413.png)
+![](../../assets/20181015175413.png)
 
 ### wtform进行参数校验
 ```python
@@ -194,7 +194,7 @@ print(myobj.b) # 输出1
 线程隔离栈 LocalStack()：push，pop和top方法，有线程隔离的特性。
 
 ### flask常见误区
-错误： working outside application context
+错误： working outside application context  
 本地代理-LocalProxy：代理模式——设计模式内容
 
 flask中的上下文（对象，对一系列flask上下文进行封装）： 应用上下文 Flask封装，请求上下文 Request封装
@@ -207,14 +207,14 @@ current_app 和 request 对象都是指向这两个栈顶的元素。LocalProxy 
 
 实现上下文协议的对象可以使用with语句，一个类如果定义了__enter__ 和 __exit__ 函数则构成一个上下文管理器，此时可以使用with语句。
 
-![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181016210402.png)
+![](../../assets/20181016210402.png)
 
 ### 模型层（view层）
 从数据库或者API中获取的数据是原始数据，直接传给视图函数处理；而用户获取的数据展示都是体现在页面上，而页面的结构不同，可能所需的数据也不同（不需要所有数据，需要改变数据的结构或者需要多种数据）
 
 在原始数据到页面间加入viewmodel层可以对传入页面的数据做一定的修饰和改变，从而适配页面的需求。
 
-![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20181017114259.png)
+![](../../assets/20181017114259.png)
 
 模板：render方法进行渲染，可以有多个varname，随意取名，htmlname是放在templates目录下的（app = Flask(__name__)该句对应的目录为根目录，templates目录也在该根目录下）对应的html文件，可以在注册app或蓝图的地方定义模板文件存放的位置（即指定路径，蓝图的根目录是app目录，而app目录是根目录，传入的路径是相对路径）
 ```python
