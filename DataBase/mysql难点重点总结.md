@@ -3,7 +3,7 @@
 核心三要素：实体 属性和关系。ER图中，矩形代表实体，椭圆形代表属性，菱形代表关系，形状间用线段连接。
 
 一个简单的示例图：
-![](https://github.com/undersunshine/MyArticle/blob/master/Algorithm/images/20170101154040319.png)
+![](../../images/20170101154040319.png)
 
 
 1. [数据库ER图绘制技巧-1](https://jingyan.baidu.com/album/624e745961c6a134e9ba5a40.html?picindex=4)
