@@ -15,8 +15,9 @@ slaver-2订阅频道
 subscribe channnelname1,channelname2,... => 可同时订阅多个频道
 psubscribe channnelname1pattern,channelname2pattern,... => 通过模式匹配同时订阅多个频道
 
-
 ```
+
+## redis源码阅读
 
 
 
