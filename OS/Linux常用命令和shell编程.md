@@ -343,8 +343,8 @@ awk '{if($2<75) printf "%s\t%s\n",$0,"REORDER"} {if($2>=75) print $0}' testfile
 
 awk '/^ *$/ {x=x+1;} END {printx}' testfile => 匹配空行，同时计算有多少个空行
 ```
-**两个较为特殊的字段：BEGIN 和 END，BEGIN标记在执行文件操作之前完成一些操作的代码块，END标记在执行文件操作之后再完成一些操作的代码块，都写在同一个''之中**
-![AWK执行流程](http://wiki.jikexueyuan.com/project/awk/images/awk_workflow.jpg)
+**两个较为特殊的字段：BEGIN 和 END，BEGIN标记在执行文件操作之前完成一些操作的代码块，END标记在执行文件操作之后再完成一些操作的代码块，都写在同一个''之中**  
+![AWK执行流程](../assets/awk_workflow.jpg)
 
 awk的内建变量（除 $0,$1...之外的常用内建变量）
 ```shell
