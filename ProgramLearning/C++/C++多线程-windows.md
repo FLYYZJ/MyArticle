@@ -1,6 +1,8 @@
 # MFC 多线程
 ## AfxBeginThread函数
-使用方法为：msdn(https://docs.microsoft.com/en-us/cpp/parallel/multithreading-creating-worker-threads?view=vs-2019)  
+使用方法为：
+
+msdn(https://docs.microsoft.com/en-us/cpp/parallel/multithreading-creating-worker-threads?view=vs-2019)  
 ```c++
 // 回调函数格式
 UINT MyThreadProc( LPVOID pParam );

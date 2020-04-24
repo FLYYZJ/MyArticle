@@ -1,5 +1,6 @@
 # 侯捷老师视频自学笔记
-视频地址： https://www.bilibili.com/video/av27135524/?p=2
+视频地址：   
+https://www.bilibili.com/video/av27135524/?p=2
 
 ## 其它细节
 头文件的防卫式声明
